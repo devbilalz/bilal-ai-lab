@@ -1,0 +1,80 @@
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
+import { site } from "@/lib/site";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { LenisProvider } from "@/components/providers/lenis-provider";
+import { PersonJsonLd } from "@/components/seo/person-json-ld";
+import { Nav } from "@/components/layout/nav";
+import { Footer } from "@/components/layout/footer";
+import { Starfield } from "@/components/background/starfield";
+import { SectionRail } from "@/components/layout/section-rail";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: {
+    default: `${site.person} - ${site.title}`,
+    template: `%s - ${site.person}`,
+  },
+  description: site.description,
+  keywords: [...site.keywords],
+  authors: [{ name: site.person, url: site.url }],
+  creator: site.person,
+  openGraph: {
+    type: "website",
+    url: site.url,
+    title: `${site.person} - ${site.title}`,
+    description: site.description,
+    siteName: site.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${site.person} - ${site.title}`,
+    description: site.description,
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0f",
+  colorScheme: "dark",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full bg-background text-foreground flex flex-col">
+        <Starfield />
+        <PersonJsonLd />
+        <ThemeProvider>
+          <LenisProvider>
+            <Nav />
+            <SectionRail />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </LenisProvider>
+        </ThemeProvider>
+        <Analytics />
+      </body>
+    </html>
+  );
+}
