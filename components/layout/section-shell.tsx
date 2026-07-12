@@ -22,7 +22,7 @@ export function SectionShell({
     <section
       id={id}
       className={cn(
-        "mx-auto w-full max-w-6xl scroll-mt-20 px-6 py-20 sm:py-28",
+        "mx-auto w-full max-w-6xl scroll-mt-16 px-6 pt-6 pb-20 sm:pt-8 sm:pb-28",
         className,
       )}
     >

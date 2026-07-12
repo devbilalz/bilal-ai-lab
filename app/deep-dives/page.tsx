@@ -6,16 +6,16 @@ import { Reveal } from "@/components/animations/reveal";
 import { deepDives } from "@/lib/content/deep-dives";
 
 export const metadata: Metadata = {
-  title: "Deep Dives",
+  title: "Case Files",
   description:
-    "Engineering case studies across the Gemini Gym (Agent APIs, DBGen, Benchmark), SWE trajectory evaluation, and product work at Sphere, Duett, and JoinReflect: problem, architecture, tradeoffs, and results.",
+    "Engineering case files across the Gemini Gym (Agent APIs, DBGen, Benchmark), SWE trajectory evaluation, and product work at Sphere, Duett, and JoinReflect: problem, architecture, tradeoffs, and results.",
 };
 
 export default function DeepDivesPage() {
   return (
     <SectionShell
       id="deep-dives"
-      eyebrow="Deep Dives"
+      eyebrow="Case Files"
       title="How the systems actually work"
       className="pt-28"
       back={<BackHome />}
@@ -30,7 +30,7 @@ export default function DeepDivesPage() {
               <h2 className="text-lg font-semibold text-foreground">{d.title}</h2>
               <p className="mt-2 flex-1 text-sm text-muted">{d.tagline}</p>
               <span className="mt-4 font-mono text-[0.65rem] uppercase tracking-widest text-accent">
-                read →
+                inspect →
               </span>
             </Link>
           </Reveal>

@@ -57,7 +57,7 @@ export function ProjectNode({ data, selected }: NodeProps) {
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-[0.6rem] uppercase tracking-widest">
           <span className="text-subtle group-hover:hidden">
-            {project.deepDive ? "deep dive →" : "module"}
+            {project.deepDive ? "case file →" : "module"}
           </span>
           <span className="hidden items-center gap-1 text-accent group-hover:inline-flex">
             <MousePointerClick className="size-3" />

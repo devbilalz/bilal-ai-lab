@@ -19,6 +19,7 @@ import {
   projectBySlug,
   geminiGym,
 } from "@/lib/content/projects";
+import { setDeepDiveOrigin } from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import { ProjectNode } from "./project-node";
 import { GymGroupNode } from "./gym-group-node";
@@ -153,24 +154,42 @@ export function MissionControl() {
         hidden). When a module is selected the panel "hangs" in from a peg and
         swings to rest like a placard; height is driven by content.
       */}
-      <div className="lg:sticky lg:top-24">
-        <AnimatePresence mode="wait">
+      <div className="relative lg:sticky lg:top-24">
+        {/*
+          popLayout (not "wait") so the placard mounts and starts unfurling the
+          instant a node is clicked - the outgoing card is popped out of flow and
+          fades on its own, never blocking the entrance.
+        */}
+        <AnimatePresence mode="popLayout">
           {active ? (
             <motion.div
               key={active.slug}
               style={{ transformOrigin: "top center" }}
-              initial={reduced ? false : { rotate: -6, y: -14, opacity: 0 }}
-              animate={{ rotate: 0, y: 0, opacity: 1 }}
-              exit={reduced ? { opacity: 0 } : { opacity: 0, y: -10, rotate: -3 }}
+              initial={
+                reduced ? false : { opacity: 0, y: -12, scaleY: 0.28, rotate: -3 }
+              }
+              animate={{ opacity: 1, y: 0, scaleY: 1, rotate: 0 }}
+              exit={
+                reduced
+                  ? { opacity: 0 }
+                  : {
+                      opacity: 0,
+                      scaleY: 0.4,
+                      y: -8,
+                      transition: { duration: 0.22, ease: "easeIn" },
+                    }
+              }
               transition={
                 reduced
                   ? { duration: 0.2 }
                   : {
-                      // Spring gives a naturally smooth, damped pendulum settle
-                      // (a couple of gentle swings) with no keyframe jerks.
-                      rotate: { type: "spring", stiffness: 110, damping: 9, mass: 1 },
-                      y: { type: "spring", stiffness: 130, damping: 15 },
-                      opacity: { duration: 0.35, ease: "easeOut" },
+                      // Banner drops from the peg (y) and unfurls downward
+                      // (scaleY) slowly, with a gentle rotate settle - the reveal
+                      // begins the moment the node is clicked, no gap.
+                      opacity: { duration: 0.28, ease: "easeOut" },
+                      y: { type: "spring", stiffness: 220, damping: 22 },
+                      scaleY: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                      rotate: { type: "spring", stiffness: 120, damping: 12 },
                     }
               }
               className="relative pt-6"
@@ -218,9 +237,10 @@ export function MissionControl() {
                 {active.deepDive && (
                   <Link
                     href={`/deep-dives/${active.slug}`}
+                    onClick={() => setDeepDiveOrigin("mission-control")}
                     className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
                   >
-                    Read the deep dive
+                    Open case file
                     <ArrowRight className="size-3.5" />
                   </Link>
                 )}

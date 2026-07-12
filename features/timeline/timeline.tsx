@@ -6,9 +6,10 @@ import { ArrowUpRight } from "lucide-react";
 import { motion, useScroll, useSpring } from "motion/react";
 import { timeline, type TimelineStage } from "@/lib/content/timeline";
 import { CompanyLogo } from "@/components/common/company-logo";
+import { setDeepDiveOrigin } from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
 
-/** Company name: external site if known, else the deep dive, else plain text. */
+/** Company name: external site if known, else the case file, else plain text. */
 function CompanyName({ stage }: { stage: TimelineStage }) {
   const nameClass =
     "font-mono text-[0.95rem] font-medium text-accent-soft [text-shadow:0_0_14px_var(--accent-glow)] transition-colors hover:text-accent";
@@ -28,7 +29,11 @@ function CompanyName({ stage }: { stage: TimelineStage }) {
   }
   if (stage.deepDive) {
     return (
-      <Link href={`/deep-dives/${stage.deepDive}`} className={nameClass}>
+      <Link
+        href={`/deep-dives/${stage.deepDive}`}
+        onClick={() => setDeepDiveOrigin("timeline")}
+        className={nameClass}
+      >
         @{stage.company}
       </Link>
     );
@@ -73,7 +78,8 @@ export function Timeline() {
         {timeline.map((stage, i) => (
           <motion.li
             key={stage.id}
-            className="relative"
+            id={`stage-${stage.id}`}
+            className="relative scroll-mt-24"
             initial={reduced ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -127,9 +133,10 @@ export function Timeline() {
             {stage.deepDive && (
               <Link
                 href={`/deep-dives/${stage.deepDive}`}
+                onClick={() => setDeepDiveOrigin("timeline")}
                 className="mt-3 inline-flex text-sm font-medium text-accent hover:underline"
               >
-                Deep dive →
+                Case file →
               </Link>
             )}
           </motion.li>

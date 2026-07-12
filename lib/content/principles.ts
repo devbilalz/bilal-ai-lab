@@ -24,8 +24,9 @@ export const principles: { title: string; body: string }[] = [
   },
 ];
 
-/** S7.2 - one real personal-interest line. Null => render <Placeholder/>. */
-export const personalInterest: string | null = null;
+/** S7.2 - one real personal-interest line. */
+export const personalInterest =
+  "Outside the terminal, I reset through travel, good food, and long walks - drawn to better habits, sharper systems, stubborn side projects, and how good teams make hard things look calm.";
 
 /** S8 - Currently Building focus areas (from resume/plan). No star ratings. */
 export interface BuildingItem {

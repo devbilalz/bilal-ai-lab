@@ -1,5 +1,5 @@
 /**
- * S9 Deep Dive content. Grounded in the `Turing Projects Overview/` docs.
+ * S9 Case File content. Grounded in the `Turing Projects Overview/` docs.
  *
  * CONFIDENTIALITY: internal identifiers (repo names, protobuf/type names,
  * internal spec IDs, validator version tags) are intentionally scrubbed pending
@@ -85,9 +85,18 @@ export const deepDives: DeepDive[] = [
       { value: "~90%", label: "automated quality coverage" },
       { value: "36+", label: "services with regression suites" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "At 77 services the dangerous bugs weren't syntax errors - they were quiet contract mismatches: the model sees one schema, the code accepts another, and the eval starts grading the wrong thing.",
+      "The hard part was proving the simulator behaved like the real world, not hoping the mock looked close enough - real APIs have odd query syntax, pagination, auth states, and error behavior.",
+      "Every new service threatened to add its own exception, so quality had to scale through the framework and its checks, not through humans remembering rules.",
+    ],
+    lessons: [
+      "A model eval is only as good as the tool contract behind it.",
+      "Simulation needs proof - sim2real tests are what turn a mock into infrastructure.",
+      "If quality depends on people remembering rules, the system isn't ready to scale.",
+    ],
+    contribution:
+      "I worked across the whole environment, not one slice of it. I built simulated services with real business logic, strictly-typed models, and persisted mock state; the auto-generated function-call contracts (via a tool-spec decorator) so the schema Gemini sees can never drift from the code; and the 6-layer function-call validator that catches defects Google's own SDK silently accepts. I also built the realism-and-control layer - sim2real parity suites, the runtime feature manager for error, auth, and schema-mutation injection, full multi-turn call-logging, and the scenario and regression suites across 36+ services - plus the CI, typing, and auto-generated docs that keep the whole thing production-grade as it scales to each new service.",
   },
   {
     slug: "dbgen",
@@ -142,8 +151,13 @@ export const deepDives: DeepDive[] = [
       "A required schema field silently generated as null failed live tool calls - caught by the agent-loop QA rig before it could corrupt downstream training data.",
       "Rubric-fidelity audits found graders that invented constraints or double-counted a fact as two checks - a flawed rubric damages a training signal as much as flawed data.",
     ],
-    lessons: null,
-    contribution: null,
+    lessons: [
+      "Synthetic data isn't useful because it's fake; it's useful when it's controlled, replayable, and gradeable.",
+      "Rubrics are part of the dataset - a bad rubric can poison evaluation as much as bad data.",
+      "Generation pipelines need record-level observability, because one broken field can invalidate a whole scenario.",
+    ],
+    contribution:
+      "I worked across every phase of the engine, end to end. On generation, I built the story-first pipeline that turns a one-paragraph brief into a schema-exact world - world bible, dependency graph, cross-record reconciliation, and drop-in projection - across Google Drive, Slack, and Jira on one shared, service-agnostic engine. On grading, I authored the rubric layer (hard and soft, deterministic and LLM-judged checks) so every world ships gradeable, tied back to the source scenario. On evaluation, I ran the multi-model generation trials and built the live agent-loop QA rig that drives a real Gemini agent through a generated world and validates every response against the real schema. And on scaling and quality, I hardened the engine under real Gemini traffic - closing content-quality gaps, adding resilience to transient model-API failures, and wiring per-record provenance so any bad field traces back to the exact step that produced it.",
   },
   {
     slug: "benchmark-suite",
@@ -194,9 +208,18 @@ export const deepDives: DeepDive[] = [
       { value: "109", label: "tasks in Toolathlon" },
       { value: "3", label: "frontier model families compared" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "Clean benchmarks tell you who wins in a lab; this suite asked who survives when the tool environment gets messy - so the degradations had to be realistic, not arbitrary noise.",
+      "The trick was bending benchmark inputs without breaking the benchmark's own scoring: every mutation had to be reversed before grading so results stayed comparable to published baselines.",
+      "Composing one degradation at a time was a deliberate constraint - stacking many at once produces a dramatic failure nobody can explain or turn into training signal.",
+    ],
+    lessons: [
+      "Robustness is a curve, not a pass/fail result.",
+      "One mutation at a time beats a dramatic stress test nobody can explain.",
+      "The most useful eval output isn't a score - it's a failure mode the training loop can act on.",
+    ],
+    contribution:
+      "I built the harness end to end. The core is a transparent interception layer that runs inside an isolated container per benchmark and rewrites each tool-use call on the way to the model - stripping docs, renaming functions, shifting modality, forcing non-native call formats, or hiding the query behind a file the model must discover - then reverses the mutation before grading so results stay directly comparable to published baselines, with zero edits to benchmark source. I designed the 16 mutations across four categories to compose one at a time, and built the registry so a new benchmark or a new mutation plugs in with no orchestrator changes. That let me run Gemini head-to-head against GPT-5 and Claude under identical adversarial conditions, and package every run as standardized trajectory data so each discovered weakness flows straight back into Gemini's training loop instead of dying in a report.",
   },
   {
     slug: "swe-evaluation",
@@ -246,9 +269,18 @@ export const deepDives: DeepDive[] = [
       { value: "trace + step", label: "evaluation granularities" },
       { value: "ground truth", label: "human labels as the answer key" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "A model can finish the task and still fail the job - skip tests, ignore an instruction, or claim a success it never verified - so 'done' was never the same as 'done well'.",
+      "Reviewers saw only what the trace proved (the agent's words, tool names, and bash commands, with tool outputs stripped), exactly mirroring what the model graders saw.",
+      "Long trajectories bury the real problem across many steps, and a model's own self-evaluation is a useful hint that is often a false positive - the discipline was to judge only what the evidence proved.",
+    ],
+    lessons: [
+      "Final answers hide process failures; trajectories expose them.",
+      "Evaluation quality depends on restraint - don't punish what you can't prove.",
+      "A good agent isn't just correct; it's honest about what it actually did.",
+    ],
+    contribution:
+      "I served as the human-referee layer, evaluating AI coding trajectories against a fixed 15-tag rubric across instruction following, communication, efficiency, and testing behavior - at both trace level (grading a whole trajectory and recording the step each violation occurred at) and step level (grading a single proposed action in isolation). I worked the verify-the-flags way: starting from the models' own flagged issues and confirming each against only the visible evidence - the agent's words, tool names, and bash commands - marking a tag violated only when a reported issue proved real under review. The judgment had to be conservative: if the trace didn't prove a violation it stayed unflagged, even when it was tempting to assume one, and an explicit instruction (skip tests, be terse) was never counted against the agent. That restraint is what made the labels trustworthy as the ground-truth answer key for measuring how well models grade their own and each other's work.",
   },
   {
     slug: "sphere",
@@ -294,9 +326,18 @@ export const deepDives: DeepDive[] = [
       { value: "world-first", label: "AI-powered tax-compliance platform" },
       { value: "CEO + CTO", label: "direct technical-roadmap partnership" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "Sphere wasn't one product wearing three names - it was three different engineering problems (EdTech, revenue AI, and tax compliance) under one startup clock, and the stable products still had to run through every pivot.",
+      "The tax platform couldn't be a clever demo: indirect-tax rules span many jurisdictions and change constantly, so correctness, freshness, and auditability were non-negotiable.",
+      "AI in revenue operations only works when a human can see the evidence behind a suggestion, so outputs had to stay source-grounded rather than black-box.",
+    ],
+    lessons: [
+      "A pivot tests architecture - the parts that survive are the boundaries you drew well.",
+      "AI products need evidence chains, especially when they touch sales or compliance decisions.",
+      "On a small team, reliability isn't a separate role - it has to be built into everyday product work.",
+    ],
+    contribution:
+      "I worked across Sphere's major pivots - from the Rails and React learning platform to AI revenue workflows and the tax-compliance platform - strongest where product ambiguity met system design: turning fast-moving ideas into reliable APIs, dashboards, integrations, and workflows. I partnered closely with leadership on technical direction while helping the team hold quality and delivery steady through each pivot.",
     gallery: [
       {
         src: "/deep-dives/sphere/filings.avif",
@@ -350,9 +391,18 @@ export const deepDives: DeepDive[] = [
       { value: "matching", label: "engine replaced manual coordination" },
       { value: "provider growth", label: "two-sided network for coordinators + providers" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "This wasn't matching restaurants to reviews - it was matching vulnerable patients to care providers, so correctness and trust mattered more than raw speed.",
+      "HIPAA constraints around protected health information had to shape the architecture from the start, not get patched in later.",
+      "A good match needed more than keyword search (availability, specialty, location, and care-plan fit), and predictive models built with data-science partners had to plug into real coordinator workflows, not sit in a separate experiment.",
+    ],
+    lessons: [
+      "In healthcare, speed only matters after trust is protected.",
+      "Matching engines are product systems, not just algorithms.",
+      "Privacy constraints should shape the architecture early, not get patched in later.",
+    ],
+    contribution:
+      "I worked on the marketplace backend and matching workflow that connected care coordinators with home-health providers, translating patient needs into provider-ranking logic and secure workflows that could handle protected health information. I also helped integrate the predictive-analytics work into the product path, so matching intelligence showed up inside real coordinator workflows rather than as a standalone model.",
   },
   {
     slug: "joinreflect",
@@ -392,9 +442,81 @@ export const deepDives: DeepDive[] = [
       { value: "4.9 / 5", label: "average therapist rating (platform today)" },
       { value: "20 states", label: "reflect's reach today, from a matching-first foundation" },
     ],
-    challenges: null,
-    lessons: null,
-    contribution: null,
+    challenges: [
+      "Therapist fit is subjective and sensitive - a bad match is costly to a user - so the system had to understand fit, not just filter a directory.",
+      "Scheduling conflicts aren't small bugs in mental health; they're moments where a user can lose trust, and the calendar had to coordinate across many independent providers.",
+      "Privacy and security had to be built into the matching and scheduling flows, while the product still felt simple over complex backend state.",
+    ],
+    lessons: [
+      "Sensitive products need calm systems - reliability is part of the user experience.",
+      "A matching algorithm is only valuable if the surrounding workflow can deliver on the match.",
+      "The best backend work disappears for the user: booking feels simple because the complexity moved into the system.",
+    ],
+    contribution:
+      "I built backend services around matching and scheduling: the recommendation flow that paired patients with therapists by needs and stressors, and the calendar orchestration that kept availability usable across independent providers. The work combined product sensitivity with backend discipline, because the system handled personal health context and had to make care feel easier, not more complicated.",
+  },
+  {
+    slug: "rlhf-sft",
+    title: "RLHF / SFT Data Curation",
+    tagline: "The training-data supply chain behind code-centric fine-tuning across Gemini, Claude, Grok, and ServiceNow AI.",
+    problem:
+      "Code-centric model training needs high-quality examples, not just volume. A model is only as good as the data and labels it learns from, so a noisy or inconsistent example doesn't just get ignored - it quietly becomes model behavior. The challenge was to build a curation and review process that could keep quality high across multiple model families and coding stacks, without collapsing under the sheer scale of data required.",
+    constraints: [
+      "Correctness first - a plausible-but-wrong example is worse than no example.",
+      "Prompt fidelity: curated data had to reflect how the model would actually be prompted, not an idealized format.",
+      "Multi-stack coverage across languages and frameworks, so gains didn't come at the cost of narrowness.",
+      "A latency budget: quality improvements couldn't come by making the model slower to respond.",
+      "Reviewer alignment, so many people applying the same rubric produced consistent labels.",
+    ],
+    architecture: [
+      {
+        title: "Data curation pipeline",
+        body: "Sourcing, filtering, and shaping code-centric examples into training-ready datasets, with the prompt format matched to real inference conditions rather than a clean lab format.",
+      },
+      {
+        title: "Labeling rubrics + review loops",
+        body: "Explicit rubrics turned subjective quality into repeatable judgments, and structured review loops caught disagreement early so labels stayed consistent across reviewers.",
+      },
+      {
+        title: "Model evaluation feedback",
+        body: "Evaluation results fed back into curation, so the dataset targeted the specific failure modes the models actually showed instead of guessing at what to fix.",
+      },
+      {
+        title: "Multi-model coverage",
+        body: "The same discipline applied across Gemini, Claude, Grok, and ServiceNow AI, accounting for differences in how each model responds to the same training signal.",
+      },
+    ],
+    tradeoffs: [
+      {
+        decision: "Maximize data volume vs. curate for quality",
+        chose: "Curate for quality",
+        why: "Weak labels scale faster than good intent - a large but noisy dataset teaches the model the noise. Tighter curation produced cleaner signal per example.",
+      },
+      {
+        decision: "Single-reviewer speed vs. rubric-aligned consensus",
+        chose: "Rubric-aligned review",
+        why: "Consistency across reviewers is what makes labels trustworthy at scale; a fast label nobody else would reproduce is not a reliable training signal.",
+      },
+    ],
+    results: [
+      { value: "4", label: "model families curated for" },
+      { value: "+18%", label: "contextual accuracy" },
+      { value: "-45ms", label: "inference latency" },
+      { value: "code-centric", label: "multi-stack training data" },
+    ],
+    challenges: [
+      "Noisy or plausible-but-wrong examples slipped in easily and, once trained on, were hard to detect after the fact - the cost of a bad label is paid downstream.",
+      "Reviewer consistency was a system problem, not a willpower problem: without explicit rubrics, the same trajectory got labeled differently by different people.",
+      "Latency and quality pulled against each other, so every accuracy gain had to be checked against the response-time budget.",
+      "Each model family responded differently to the same data, so a signal that helped one could be neutral or harmful to another.",
+    ],
+    lessons: [
+      "Training data is product infrastructure, not a one-off dataset.",
+      "Bad labels scale faster than good intent - quality control is the real work.",
+      "Latency wins only matter if quality survives them.",
+    ],
+    contribution:
+      "I led SFT and RLHF data curation and model evaluation for code-centric training across Gemini, Claude, Grok, and ServiceNow AI. My focus was treating the dataset as infrastructure: explicit labeling rubrics, review loops that kept reviewers aligned, and an evaluation feedback path so curation targeted the failure modes the models actually showed. The measurable result was higher contextual accuracy without paying for it in latency.",
   },
 ];
 

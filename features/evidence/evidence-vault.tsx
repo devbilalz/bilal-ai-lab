@@ -1,6 +1,5 @@
 import { Reveal } from "@/components/animations/reveal";
-import { Placeholder } from "@/components/common/placeholder";
-import { evidence, hasDocumentFiles } from "@/lib/content/evidence";
+import { evidence } from "@/lib/content/evidence";
 
 const kindLabel: Record<string, string> = {
   education: "education",
@@ -10,8 +9,7 @@ const kindLabel: Record<string, string> = {
 
 /**
  * S6 Evidence Vault. Renders the verifiable claims we have (education, honors,
- * recommendations); scanned document files render a Placeholder until supplied.
- * Every card carries a context caption - no bare titles.
+ * recommendations). Every card carries a context caption - no bare titles.
  */
 export function EvidenceVault() {
   return (
@@ -41,13 +39,6 @@ export function EvidenceVault() {
           </Reveal>
         ))}
       </div>
-
-      {!hasDocumentFiles && (
-        <Placeholder
-          node="S6.2"
-          label="Scanned documents (degree certificate, transcript, recommendation letters, award certificates) - awaiting files from Bilal to render as viewable evidence cards."
-        />
-      )}
     </div>
   );
 }

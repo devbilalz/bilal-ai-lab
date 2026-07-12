@@ -1,5 +1,5 @@
 /**
- * S2 Mission Control + S9 Deep Dive source data.
+ * S2 Mission Control + S9 Case File source data.
  *
  * STRUCTURE (per Bilal): "Gemini Gym" is the umbrella program at Turing (for
  * Google). It contains THREE components:
@@ -100,13 +100,14 @@ export const projects: Project[] = [
     label: "RLHF / SFT",
     role: "Model fine-tuning",
     summary:
-      "Supervised fine-tuning and RLHF data curation across Gemini, Grok, and ServiceNow AI - producing code-centric training datasets that raised contextual accuracy and cut inference latency.",
+      "Supervised fine-tuning and RLHF data curation across Gemini, Claude, Grok, and ServiceNow AI - producing code-centric training datasets that raised contextual accuracy and cut inference latency.",
     stats: [
+      { value: "4", label: "model families" },
       { value: "+18%", label: "contextual accuracy" },
       { value: "-45ms", label: "inference latency" },
     ],
     status: "ongoing",
-    deepDive: false,
+    deepDive: true,
   },
 ];
 

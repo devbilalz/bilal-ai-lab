@@ -19,8 +19,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const dd = deepDiveBySlug(slug);
-  if (!dd) return { title: "Deep Dive" };
-  return { title: `${dd.title} - Deep Dive`, description: dd.tagline };
+  if (!dd) return { title: "Case File" };
+  return { title: `${dd.title} - Case File`, description: dd.tagline };
 }
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
@@ -50,7 +50,7 @@ export default async function DeepDivePage({
       <DeepDiveBack slug={dd.slug} />
 
       <p className="mt-6 font-mono text-xs uppercase tracking-widest text-accent">
-        Deep Dive
+        Case File
       </p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">{dd.title}</h1>
       <p className="mt-3 text-lg text-muted">{dd.tagline}</p>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { markBootDone } from "@/lib/hero-intro";
 import { site } from "@/lib/site";
 
 /**
@@ -64,7 +65,14 @@ export function BootWow() {
   const finish = useCallback(() => {
     setActive(false);
     bootPlayedThisLoad = true;
+    markBootDone();
   }, []);
+
+  // If the overlay won't play (reduced motion, or an in-app return to home
+  // after it already played), release the hero console immediately.
+  useEffect(() => {
+    if (reduced || bootPlayedThisLoad) markBootDone();
+  }, [reduced]);
 
   // Boot line stepper.
   useEffect(() => {

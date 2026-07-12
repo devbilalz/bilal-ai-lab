@@ -20,7 +20,7 @@ export function Nav() {
       >
         <div className="flex items-center gap-3">
           <Link
-            href="/"
+            href="/#top"
             className="font-mono text-sm font-semibold tracking-tight text-foreground"
           >
             <span className="text-accent">~/</span>
