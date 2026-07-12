@@ -11,15 +11,18 @@ import { site } from "@/lib/site";
  * The single maximalist animation on the site. It is an OVERLAY: the Hero
  * beneath it is always server-rendered, so credibility text and LCP never
  * depend on this playing. Rules honored:
- *  - Plays once per visitor (localStorage flag), then never again.
+ *  - Plays once per page load: it replays on every reload / hard reload, but
+ *    NOT on client-side navigations back to home within the same load (an
+ *    in-memory flag resets only when the JS context is recreated on reload).
  *  - Fully skippable (button, click, Escape).
  *  - Reduced-motion => does not mount at all (static hero shows instantly).
  */
 
-const STORAGE_KEY = "bal:boot-seen:v1";
+/** Resets on every full page load; persists across in-app (SPA) navigations. */
+let bootPlayedThisLoad = false;
 
 const BOOT_LINES = [
-  "$ boot bilal-ai-lab --profile=production",
+  "$ boot bilal-zahid --profile=production",
   "› mounting knowledge base ................. ok",
   "› loading Gemini Gym · DBGen · Benchmark ... ok",
   "› indexing 6+ years of production systems .. ok",
@@ -48,28 +51,19 @@ export function BootWow() {
   const [line, setLine] = useState(0);
 
   // Decide whether to play - after first paint (rAF), so the overlay never
-  // blocks the hero's LCP and localStorage (client-only) is read safely.
+  // blocks the hero's LCP. The in-memory flag makes it replay on every reload
+  // but stay quiet on client-side navigations back to home.
   useEffect(() => {
     if (reduced) return;
     const id = requestAnimationFrame(() => {
-      let seen = false;
-      try {
-        seen = localStorage.getItem(STORAGE_KEY) === "1";
-      } catch {
-        seen = false;
-      }
-      if (!seen) setActive(true);
+      if (!bootPlayedThisLoad) setActive(true);
     });
     return () => cancelAnimationFrame(id);
   }, [reduced]);
 
   const finish = useCallback(() => {
     setActive(false);
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
+    bootPlayedThisLoad = true;
   }, []);
 
   // Boot line stepper.

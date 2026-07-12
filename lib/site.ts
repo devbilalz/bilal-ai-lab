@@ -24,7 +24,7 @@ function resolveSiteUrl(): string {
 }
 
 export const site = {
-  name: "Bilal AI Lab",
+  name: "Bilal Zahid",
   person: "Bilal Zahid",
   title: "LLM Infrastructure Engineer",
   tagline: "AI Infrastructure · Agentic AI · Platform Engineering",

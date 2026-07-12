@@ -25,6 +25,18 @@ export interface TimelineStage {
 
 export const timeline: TimelineStage[] = [
   {
+    id: "ta",
+    period: "07/2018 - 05/2019",
+    company: "FAST-NUCES",
+    url: "https://www.nu.edu.pk",
+    domain: "nu.edu.pk",
+    role: "Teaching Assistant",
+    stage: "Foundations",
+    summary:
+      "Supported instructors in delivering core computer-science coursework: ran and graded assessments, clarified concepts one-on-one, and guided students through hands-on problem solving. Where I first learned to break hard systems down into ideas people could actually build on.",
+    stack: [],
+  },
+  {
     id: "joinreflect",
     period: "03/2020 - 01/2021",
     company: "JoinReflect",

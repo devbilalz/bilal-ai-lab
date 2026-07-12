@@ -44,7 +44,7 @@ export function SiteMenu() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="group inline-flex items-center gap-2 rounded-full border border-border-strong px-4 py-1.5 text-sm text-foreground transition-colors hover:border-accent hover:bg-surface"
+        className="group inline-flex cursor-pointer items-center gap-2 rounded-full border border-border-strong px-4 py-1.5 text-sm text-foreground transition-colors hover:border-accent hover:bg-surface"
       >
         <Waypoints className="size-4 text-accent transition-transform group-hover:rotate-90" />
         System Map

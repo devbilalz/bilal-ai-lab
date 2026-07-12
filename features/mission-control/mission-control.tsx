@@ -43,6 +43,9 @@ const standalonePos: Record<string, { x: number; y: number }> = {
 export function MissionControl() {
   const reduced = usePrefersReducedMotion();
   const [selected, setSelected] = useState<string | null>(null);
+  // Until the user actually clicks, we keep the entry node's "ping" running as
+  // the invitation to interact; it stops on first interaction.
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const nodes: Node[] = useMemo(() => {
     const group: Node = {
@@ -56,21 +59,28 @@ export function MissionControl() {
       zIndex: 0,
     };
 
-    const projectNodes: Node[] = projects.map((p) => {
+    const projectNodes: Node[] = projects.map((p, i) => {
       const inGym = Boolean(p.inGym);
       return {
         id: p.slug,
         type: "project",
         position: inGym ? gymChildPos[p.slug] : standalonePos[p.slug],
         ...(inGym ? { parentId: geminiGym.id, extent: "parent" as const } : {}),
-        data: { project: p, dimmed: selected !== null && selected !== p.slug },
+        data: {
+          project: p,
+          dimmed: hasInteracted && selected !== null && selected !== p.slug,
+          // Every module pulses until first interaction, staggered so the map
+          // reads as a calm travelling wave rather than a synchronized blink.
+          ping: !hasInteracted && !reduced,
+          pingDelay: i * 0.4,
+        },
         selected: selected === p.slug,
         draggable: false,
       };
     });
 
     return [group, ...projectNodes];
-  }, [selected]);
+  }, [selected, hasInteracted, reduced]);
 
   const edges: Edge[] = useMemo(
     () =>
@@ -91,11 +101,11 @@ export function MissionControl() {
           style: {
             stroke: active ? "var(--accent)" : "var(--border-strong)",
             strokeWidth: active ? 2 : 1.2,
-            opacity: selected !== null && !active ? 0.2 : 1,
+            opacity: hasInteracted && selected !== null && !active ? 0.2 : 1,
           },
         };
       }),
-    [selected, reduced],
+    [selected, reduced, hasInteracted],
   );
 
   const active = selected ? projectBySlug(selected) : null;
@@ -109,9 +119,13 @@ export function MissionControl() {
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => {
             if (node.id === geminiGym.id) return;
+            setHasInteracted(true);
             setSelected(node.id);
           }}
-          onPaneClick={() => setSelected(null)}
+          onPaneClick={() => {
+            setHasInteracted(true);
+            setSelected(null);
+          }}
           fitView
           fitViewOptions={{ padding: 0.22 }}
           minZoom={0.3}
@@ -145,14 +159,20 @@ export function MissionControl() {
             <motion.div
               key={active.slug}
               style={{ transformOrigin: "top center" }}
-              initial={reduced ? false : { rotate: -5, y: -14, opacity: 0 }}
-              animate={{
-                rotate: reduced ? 0 : [-5, 3.5, -1.8, 0.7, 0],
-                y: 0,
-                opacity: 1,
-              }}
+              initial={reduced ? false : { rotate: -6, y: -14, opacity: 0 }}
+              animate={{ rotate: 0, y: 0, opacity: 1 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, y: -10, rotate: -3 }}
-              transition={{ duration: reduced ? 0.2 : 0.95, ease: "easeOut" }}
+              transition={
+                reduced
+                  ? { duration: 0.2 }
+                  : {
+                      // Spring gives a naturally smooth, damped pendulum settle
+                      // (a couple of gentle swings) with no keyframe jerks.
+                      rotate: { type: "spring", stiffness: 110, damping: 9, mass: 1 },
+                      y: { type: "spring", stiffness: 130, damping: 15 },
+                      opacity: { duration: 0.35, ease: "easeOut" },
+                    }
+              }
               className="relative pt-6"
             >
               {/* peg + strings the placard hangs from */}

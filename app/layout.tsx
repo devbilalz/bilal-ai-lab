@@ -10,6 +10,7 @@ import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 import { Starfield } from "@/components/background/starfield";
 import { SectionRail } from "@/components/layout/section-rail";
+import { RouteHistory } from "@/components/layout/route-history";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
         <PersonJsonLd />
         <ThemeProvider>
           <LenisProvider>
+            <RouteHistory />
             <Nav />
             <SectionRail />
             <div className="flex-1">{children}</div>

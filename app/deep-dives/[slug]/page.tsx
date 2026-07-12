@@ -6,6 +6,7 @@ import { Reveal } from "@/components/animations/reveal";
 import { Placeholder } from "@/components/common/placeholder";
 import { deepDives, deepDiveBySlug } from "@/lib/content/deep-dives";
 import { ApiCatalog } from "@/features/deep-dive/api-catalog";
+import { DeepDiveBack } from "@/components/layout/deep-dive-back";
 
 export function generateStaticParams() {
   return deepDives.map((d) => ({ slug: d.slug }));
@@ -44,19 +45,9 @@ export default async function DeepDivePage({
   const dd = deepDiveBySlug(slug);
   if (!dd) notFound();
 
-  const careerSlugs = ["sphere", "duett", "joinreflect"];
-  const back = careerSlugs.includes(dd.slug)
-    ? { href: "/#timeline", label: "Career Path" }
-    : { href: "/#mission-control", label: "Mission Control" };
-
   return (
     <SectionShell id={dd.slug} className="max-w-3xl pt-28">
-      <Link
-        href={back.href}
-        className="font-mono text-xs text-muted transition-colors hover:text-foreground"
-      >
-        {`< ${back.label}`}
-      </Link>
+      <DeepDiveBack slug={dd.slug} />
 
       <p className="mt-6 font-mono text-xs uppercase tracking-widest text-accent">
         Deep Dive
