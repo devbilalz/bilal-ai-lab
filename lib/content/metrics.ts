@@ -1,6 +1,6 @@
 /**
  * S5 Metrics Strip. Every number traces to a source doc or the resume.
- * `evidence` points at the Deep Dive / section that substantiates it (evidence chain).
+ * `evidence` points at the Case File / section that substantiates it (evidence chain).
  * NOTE: the "4 major AI platforms" figure from the old plan is intentionally
  * NOT used here until reconciled - we use the concrete, defensible model list.
  */

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { markBootDone } from "@/lib/hero-intro";
 import { site } from "@/lib/site";
 
 /**
@@ -34,6 +35,9 @@ const KEYWORDS = [
   "Pydantic", "Tool Use", "Benchmark", "Simulation", "Python", "FastAPI",
   "Evaluation", "Synthetic Data", "Multi-Agent", "AWS", "Docker", "Protobuf",
   "Trajectories", "Sim2Real", "Schemas", "Robustness", "Grok", "ServiceNow",
+  "TypeScript", "React", "Next.js", "PostgreSQL", "Pinecone", "Kubernetes",
+  "gRPC", "Node.js", "Redis", "Embeddings", "Fine-tuning", "Guardrails",
+  "Orchestration", "Ground Truth", "LLM Ops", "Vector Search",
 ];
 
 /** Deterministic pseudo-random so positions are stable across renders. */
@@ -46,25 +50,25 @@ type Phase = "boot" | "graph" | "done";
 
 export function BootWow() {
   const reduced = usePrefersReducedMotion();
-  const [active, setActive] = useState(false);
+  // Initialize active from the in-memory flag so the opaque overlay is present
+  // in the FIRST render (incl. SSR HTML) on a reload - the page never shows
+  // through before JS hydrates. On in-app (SPA) returns to home the flag is
+  // already set, so it stays quiet. Reduced-motion removes it on mount below.
+  const [active, setActive] = useState(() => !bootPlayedThisLoad);
   const [phase, setPhase] = useState<Phase>("boot");
   const [line, setLine] = useState(0);
-
-  // Decide whether to play - after first paint (rAF), so the overlay never
-  // blocks the hero's LCP. The in-memory flag makes it replay on every reload
-  // but stay quiet on client-side navigations back to home.
-  useEffect(() => {
-    if (reduced) return;
-    const id = requestAnimationFrame(() => {
-      if (!bootPlayedThisLoad) setActive(true);
-    });
-    return () => cancelAnimationFrame(id);
-  }, [reduced]);
 
   const finish = useCallback(() => {
     setActive(false);
     bootPlayedThisLoad = true;
+    markBootDone();
   }, []);
+
+  // If the overlay won't play (reduced motion, or an in-app return to home
+  // after it already played), release the hero console immediately.
+  useEffect(() => {
+    if (reduced || bootPlayedThisLoad) markBootDone();
+  }, [reduced]);
 
   // Boot line stepper.
   useEffect(() => {
@@ -80,7 +84,7 @@ export function BootWow() {
   // Graph phase auto-completes.
   useEffect(() => {
     if (!active || phase !== "graph") return;
-    const t = setTimeout(finish, 2600);
+    const t = setTimeout(finish, 1900);
     return () => clearTimeout(t);
   }, [active, phase, finish]);
 
@@ -98,9 +102,10 @@ export function BootWow() {
     () =>
       KEYWORDS.map((word, i) => ({
         word,
-        // start scattered across the viewport box (0..100 in each axis)
-        sx: 8 + seeded(i) * 84,
-        sy: 10 + seeded(i + 50) * 80,
+        // start scattered across the viewport box (0..100 in each axis) - wide
+        // radius so the words fill the screen before coalescing to center
+        sx: 3 + seeded(i) * 94,
+        sy: 5 + seeded(i + 50) * 90,
       })),
     [],
   );
@@ -169,9 +174,9 @@ export function BootWow() {
                     scale: [0.6, 1, 1, 0.3],
                   }}
                   transition={{
-                    duration: 2.2,
+                    duration: 1.7,
                     times: [0, 0.25, 0.7, 1],
-                    delay: seeded(i) * 0.4,
+                    delay: seeded(i) * 0.35,
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   style={{ translateX: "-50%", translateY: "-50%" }}
@@ -184,7 +189,7 @@ export function BootWow() {
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 1.0, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p className="text-3xl font-semibold tracking-tight sm:text-5xl">
                   {site.name}

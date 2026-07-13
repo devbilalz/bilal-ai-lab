@@ -1,5 +1,5 @@
 /**
- * S2 Mission Control + S9 Deep Dive source data.
+ * S2 Mission Control + S9 Case File source data.
  *
  * STRUCTURE (per Bilal): "Gemini Gym" is the umbrella program at Turing (for
  * Google). It contains THREE components:
@@ -26,6 +26,13 @@ export interface Project {
   deepDive: boolean;
   /** True if this project is a component of the Gemini Gym umbrella. */
   inGym?: boolean;
+  /** True for forward-looking focus areas (the "Current Focus" cluster). */
+  horizon?: boolean;
+  /** Live-process verb for horizon items (shown as a status label). */
+  focusStatus?: string;
+  /** For horizon items: the shipped case file that proves related depth. */
+  relatedSlug?: string;
+  relatedLabel?: string;
 }
 
 /** The umbrella program. */
@@ -35,6 +42,13 @@ export const geminiGym = {
   tagline:
     "The training-and-evaluation program that teaches Google's Gemini to use real-world tools safely, at scale.",
   components: ["dbgen", "agent-apis", "benchmark-suite"],
+} as const;
+
+/** Forward-looking cluster: where the work is headed next. */
+export const currentFocus = {
+  id: "current-focus",
+  label: "Current Focus",
+  tagline: "Where the work is headed next.",
 } as const;
 
 export const projects: Project[] = [
@@ -72,7 +86,7 @@ export const projects: Project[] = [
     label: "Benchmark Suite",
     role: "Robustness-evaluation harness",
     summary:
-      "Takes existing agentic benchmarks and deliberately degrades how tools are presented (renamed functions, stripped docs, forced text tool-calls, modality shifts), then measures whether Gemini degrades gracefully - benchmarking it head-to-head against GPT-5 and Claude under identical adversarial conditions.",
+      "Evaluates model resilience by intentionally degrading tool presentations in agentic benchmarks (renamed functions, stripped docs, etc.) and measuring whether Gemini degrades more gracefully than GPT and Claude under identical constraints.",
     stats: [
       { value: "16", label: "mutation types" },
       { value: "10", label: "industry benchmarks" },
@@ -100,13 +114,14 @@ export const projects: Project[] = [
     label: "RLHF / SFT",
     role: "Model fine-tuning",
     summary:
-      "Supervised fine-tuning and RLHF data curation across Gemini, Grok, and ServiceNow AI - producing code-centric training datasets that raised contextual accuracy and cut inference latency.",
+      "Supervised fine-tuning and RLHF data curation across Gemini, Claude, Grok, and ServiceNow AI - producing code-centric training datasets that raised contextual accuracy and cut inference latency.",
     stats: [
+      { value: "4", label: "model families" },
       { value: "+18%", label: "contextual accuracy" },
       { value: "-45ms", label: "inference latency" },
     ],
     status: "ongoing",
-    deepDive: false,
+    deepDive: true,
   },
 ];
 
@@ -123,5 +138,55 @@ export const projectEdges: { from: string; to: string; label?: string }[] = [
   { from: "swe-evaluation", to: "rlhf-sft", label: "labels" },
 ];
 
+/**
+ * The "Current Focus" cluster - forward-looking directions, not shipped work.
+ * Parallel (not sequential), so no internal edges and no numbering. Rendered as
+ * a grouped band below the pipeline to show where the work is headed.
+ */
+export const horizonProjects: Project[] = [
+  {
+    slug: "focus-orchestration",
+    label: "Multi-agent orchestration",
+    role: "Where I'm headed",
+    summary:
+      "Systems where multiple specialized agents coordinate across tools and shared state to complete long-horizon tasks.",
+    stats: [],
+    status: "ongoing",
+    deepDive: false,
+    horizon: true,
+    focusStatus: "orchestrating",
+    relatedSlug: "agent-apis",
+    relatedLabel: "Generalized Agent APIs",
+  },
+  {
+    slug: "focus-synthetic",
+    label: "Synthetic data generation",
+    role: "Where I'm headed",
+    summary:
+      "Scaling realistic, schema-exact training worlds so evaluation and fine-tuning aren't bottlenecked on hand-authored fixtures.",
+    stats: [],
+    status: "ongoing",
+    deepDive: false,
+    horizon: true,
+    focusStatus: "generating",
+    relatedSlug: "dbgen",
+    relatedLabel: "DBGen",
+  },
+  {
+    slug: "focus-eval",
+    label: "LLM evaluation frameworks",
+    role: "Where I'm headed",
+    summary:
+      "Robustness and safety evaluation that surfaces brittleness before users do, and turns every eval run into training signal.",
+    stats: [],
+    status: "ongoing",
+    deepDive: false,
+    horizon: true,
+    focusStatus: "evaluating",
+    relatedSlug: "benchmark-suite",
+    relatedLabel: "Benchmark Suite",
+  },
+];
+
 export const projectBySlug = (slug: string) =>
-  projects.find((p) => p.slug === slug);
+  [...projects, ...horizonProjects].find((p) => p.slug === slug);

@@ -6,16 +6,18 @@
    ============================================================ */
 :root {
   /* Surfaces */
-  --bg: #0a0a0f;
+  --bg: #06060a;
   --bg-elevated: #101018;
   --surface: #14141d;
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
 
-  /* Text tiers */
-  --fg: #ededf2;
-  --fg-muted: #a3a3b8;
-  --fg-subtle: #6c6c82;
+  /* Text tiers - tuned for WCAG AA (4.5:1+) on the near-black base, and to
+     stay readable where the painterly background lightens. Hierarchy is kept
+     (fg > muted > subtle) but the lowest tier no longer drops below legible. */
+  --fg: #f3f3f8; /* ~17:1  - body + headings */
+  --fg-muted: #c1c1d0; /* ~11:1 - secondary copy */
+  --fg-subtle: #8f8fa6; /* ~6.4:1 - eyebrows, labels, meta (was 3.6:1) */
 
   /* Accent (violet). Alt: cyan #22d3ee */
   --accent: #7c5cff;
@@ -90,7 +92,11 @@ html {
 }
 
 body {
-  background: var(--bg);
+  /* Transparent so the fixed painterly <Starfield> (-z-10) shows through.
+     The base color lives on <html> as the fallback. If <body> paints its own
+     opaque background, it covers the canvas (body creates no stacking context,
+     so the -z-10 canvas sits behind the body background). */
+  background: transparent;
   color: var(--fg);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

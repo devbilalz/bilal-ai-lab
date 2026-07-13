@@ -4,43 +4,64 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { motion } from "motion/react";
-import { getPreviousPath } from "@/lib/nav-history";
+import {
+  consumeDeepDiveOrigin,
+  getPreviousPath,
+  type DeepDiveOrigin,
+} from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
 
 const CAREER_SLUGS = ["sphere", "duett", "joinreflect"];
 
 type Target = { href: string; label: string };
 
-/** Resolve where "back" should go from the path the user actually came from. */
-function resolveTarget(prev: string | null, slug: string): Target {
+const ORIGIN_TARGETS: Record<DeepDiveOrigin, Target> = {
+  chat: { href: "/#top", label: "the Console" },
+  "mission-control": { href: "/#mission-control", label: "Under the Hood" },
+  timeline: { href: "/#timeline", label: "Trajectory" },
+  "deep-dives": { href: "/deep-dives", label: "Case Files" },
+};
+
+/**
+ * Resolve where "back" should go. An explicit origin recorded by the link that
+ * was clicked wins (it can tell apart surfaces that share a URL, e.g. the chat
+ * console vs Mission Control). Otherwise fall back to path history.
+ */
+function resolveTarget(
+  origin: DeepDiveOrigin | null,
+  prev: string | null,
+  slug: string,
+): Target {
+  if (origin) return ORIGIN_TARGETS[origin];
   if (prev && prev.startsWith("/deep-dives")) {
-    return { href: "/deep-dives", label: "Deep Dives" };
+    return { href: "/deep-dives", label: "Case Files" };
   }
   if (prev === "/") {
     return CAREER_SLUGS.includes(slug)
-      ? { href: "/#timeline", label: "Career Path" }
-      : { href: "/#mission-control", label: "Mission Control" };
+      ? { href: "/#timeline", label: "Trajectory" }
+      : { href: "/#mission-control", label: "Under the Hood" };
   }
-  // No in-app history (direct/external/menu) => the index.
-  return { href: "/deep-dives", label: "Deep Dives" };
+  // No in-app history (direct/external) => the index.
+  return { href: "/deep-dives", label: "Case Files" };
 }
 
 /**
- * History-aware "retrace" control. Defaults to the Deep Dives index (safe for
+ * History-aware "retrace" control. Defaults to the Case Files index (safe for
  * direct landings), then - after paint - upgrades to the exact place the user
- * came from (Mission Control, Career Path, or Deep Dives). The double-chevron
+ * came from (Mission Control, Career Path, or Case Files). The double-chevron
  * animates leftward like a path being retraced.
  */
 export function DeepDiveBack({ slug }: { slug: string }) {
   const reduced = usePrefersReducedMotion();
   const [target, setTarget] = useState<Target>({
     href: "/deep-dives",
-    label: "Deep Dives",
+    label: "Case Files",
   });
 
   useEffect(() => {
+    const origin = consumeDeepDiveOrigin();
     const id = requestAnimationFrame(() => {
-      setTarget(resolveTarget(getPreviousPath(), slug));
+      setTarget(resolveTarget(origin, getPreviousPath(), slug));
     });
     return () => cancelAnimationFrame(id);
   }, [slug]);

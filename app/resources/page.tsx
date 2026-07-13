@@ -60,8 +60,7 @@ export default function ResourcesPage() {
       </div>
 
       <p className="mt-4 text-xs text-subtle">
-        Master resume · compiled from the LaTeX source. Role-tailored variants
-        (AI Infrastructure · Applied AI · Backend · Europe · US) coming next.
+        Master resume · compiled from the LaTeX source.
       </p>
     </SectionShell>
   );

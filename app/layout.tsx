@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0f",
+  themeColor: "#06060a",
   colorScheme: "dark",
 };
 
@@ -61,9 +61,10 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-full bg-background text-foreground flex flex-col">
+      <body className="flex min-h-dvh flex-col text-foreground">
         <Starfield />
         <PersonJsonLd />
         <ThemeProvider>

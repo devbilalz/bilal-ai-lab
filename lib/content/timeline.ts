@@ -26,7 +26,7 @@ export interface TimelineStage {
 export const timeline: TimelineStage[] = [
   {
     id: "ta",
-    period: "07/2018 - 05/2019",
+    period: "Jul 2018 - May 2019",
     company: "FAST-NUCES",
     url: "https://www.nu.edu.pk",
     domain: "nu.edu.pk",
@@ -38,7 +38,7 @@ export const timeline: TimelineStage[] = [
   },
   {
     id: "joinreflect",
-    period: "03/2020 - 01/2021",
+    period: "Mar 2020 - Jan 2021",
     company: "JoinReflect",
     url: "https://joinreflect.com",
     domain: "joinreflect.com",
@@ -52,7 +52,7 @@ export const timeline: TimelineStage[] = [
   },
   {
     id: "duett",
-    period: "01/2021 - 08/2022",
+    period: "Jan 2021 - Aug 2022",
     company: "Duett.io",
     url: "https://duett.io",
     domain: "duett.io",
@@ -66,9 +66,9 @@ export const timeline: TimelineStage[] = [
   },
   {
     id: "sphere",
-    period: "09/2022 - 09/2024",
+    period: "Sep 2022 - Sep 2024",
     company: "Sphere",
-    role: "Senior FullStack Engineer",
+    role: "Senior Full-Stack Engineer",
     stage: "Enterprise AI",
     summary:
       "Engineered core platform capabilities across three enterprise SaaS products: EdTech, AI-powered revenue operations, and global indirect-tax compliance, architecting cloud-native systems and intelligent workflow automation. Drove technical roadmap directly with the CEO and CTO.",
@@ -84,7 +84,7 @@ export const timeline: TimelineStage[] = [
   },
   {
     id: "turing",
-    period: "06/2024 - Present",
+    period: "Jun 2024 - Present",
     company: "Turing",
     url: "https://www.turing.com",
     domain: "turing.com",
@@ -101,15 +101,5 @@ export const timeline: TimelineStage[] = [
       "RLHF / SFT",
     ],
     deepDive: "agent-apis",
-  },
-  {
-    id: "next",
-    period: "",
-    company: "",
-    role: "What's next",
-    stage: "The Horizon",
-    summary:
-      "Agentic AI systems, multi-agent orchestration, synthetic-data generation, and LLM evaluation frameworks: building the infrastructure that makes frontier models reliable in production.",
-    stack: [],
   },
 ];

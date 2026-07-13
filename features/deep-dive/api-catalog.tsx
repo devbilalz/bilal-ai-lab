@@ -7,7 +7,7 @@ import {
 
 /**
  * Presents the ~77 simulated real-world services grouped by category, as a
- * chip grid. Rendered inside the Agent APIs deep dive.
+ * chip grid. Rendered inside the Agent APIs case file.
  */
 export function ApiCatalog() {
   return (
