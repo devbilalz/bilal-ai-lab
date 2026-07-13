@@ -62,9 +62,9 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-full text-foreground flex flex-col">
+      <body className="flex min-h-dvh flex-col text-foreground">
         <Starfield />
         <PersonJsonLd />
         <ThemeProvider>

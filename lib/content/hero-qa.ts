@@ -62,13 +62,12 @@ export const heroQA: Record<string, QAItem[]> = {
           {
             kind: "stats",
             items: [
-              { value: "6+", label: "years" },
               { value: "3", label: "product domains" },
               { value: "Google", label: "Gemini infra" },
             ],
           },
         ],
-        ctas: [{ label: "See the timeline", href: "/#timeline" }],
+        ctas: [{ label: "See the trajectory", href: "/#timeline" }],
       },
     },
     {
@@ -96,7 +95,7 @@ export const heroQA: Record<string, QAItem[]> = {
           },
         ],
         ctas: [
-          { label: "Explore Mission Control", href: "/#mission-control" },
+          { label: "Under the Hood", href: "/#mission-control" },
           { label: "Open case file", href: "/deep-dives/agent-apis" },
         ],
       },

@@ -576,7 +576,7 @@ export function HeroConsole() {
   }
 
   return (
-    <div className="relative z-10 flex h-[82vh] max-h-[820px] min-h-[540px] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated/40 backdrop-blur">
+    <div className="relative z-10 flex h-[82vh] max-h-[820px] min-h-[540px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated/40 backdrop-blur">
       {/* Transcript */}
       <div
         ref={scrollRef}

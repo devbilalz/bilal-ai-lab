@@ -17,8 +17,8 @@ type Target = { href: string; label: string };
 
 const ORIGIN_TARGETS: Record<DeepDiveOrigin, Target> = {
   chat: { href: "/#top", label: "the Console" },
-  "mission-control": { href: "/#mission-control", label: "Mission Control" },
-  timeline: { href: "/#timeline", label: "Career Path" },
+  "mission-control": { href: "/#mission-control", label: "Under the Hood" },
+  timeline: { href: "/#timeline", label: "Trajectory" },
   "deep-dives": { href: "/deep-dives", label: "Case Files" },
 };
 
@@ -38,8 +38,8 @@ function resolveTarget(
   }
   if (prev === "/") {
     return CAREER_SLUGS.includes(slug)
-      ? { href: "/#timeline", label: "Career Path" }
-      : { href: "/#mission-control", label: "Mission Control" };
+      ? { href: "/#timeline", label: "Trajectory" }
+      : { href: "/#mission-control", label: "Under the Hood" };
   }
   // No in-app history (direct/external) => the index.
   return { href: "/deep-dives", label: "Case Files" };

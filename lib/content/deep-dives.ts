@@ -162,7 +162,7 @@ export const deepDives: DeepDive[] = [
   {
     slug: "benchmark-suite",
     title: "Benchmark Mutation Suite",
-    tagline: "Stress-tests how gracefully Gemini degrades when tool-use conditions get messy - vs. GPT-5 and Claude.",
+    tagline: "Stress-tests how gracefully Gemini degrades when tool-use conditions get messy - vs. GPT and Claude.",
     problem:
       "Standard benchmarks only measure performance under ideal conditions. But real agentic deployments see incomplete or renamed tool schemas, context cluttered with irrelevant tools, inputs arriving as images or files, and environments that block native function-calling entirely. The harder, more important question: how much does performance degrade under messy conditions, and does it degrade gracefully or catastrophically?",
     constraints: [
@@ -219,7 +219,7 @@ export const deepDives: DeepDive[] = [
       "The most useful eval output isn't a score - it's a failure mode the training loop can act on.",
     ],
     contribution:
-      "I built the harness end to end. The core is a transparent interception layer that runs inside an isolated container per benchmark and rewrites each tool-use call on the way to the model - stripping docs, renaming functions, shifting modality, forcing non-native call formats, or hiding the query behind a file the model must discover - then reverses the mutation before grading so results stay directly comparable to published baselines, with zero edits to benchmark source. I designed the 16 mutations across four categories to compose one at a time, and built the registry so a new benchmark or a new mutation plugs in with no orchestrator changes. That let me run Gemini head-to-head against GPT-5 and Claude under identical adversarial conditions, and package every run as standardized trajectory data so each discovered weakness flows straight back into Gemini's training loop instead of dying in a report.",
+      "I built the harness end to end. The core is a transparent interception layer that runs inside an isolated container per benchmark and rewrites each tool-use call on the way to the model - stripping docs, renaming functions, shifting modality, forcing non-native call formats, or hiding the query behind a file the model must discover - then reverses the mutation before grading so results stay directly comparable to published baselines, with zero edits to benchmark source. I designed the 16 mutations across four categories to compose one at a time, and built the registry so a new benchmark or a new mutation plugs in with no orchestrator changes. That let me run Gemini head-to-head against GPT and Claude under identical adversarial conditions, and package every run as standardized trajectory data so each discovered weakness flows straight back into Gemini's training loop instead of dying in a report.",
   },
   {
     slug: "swe-evaluation",
@@ -307,6 +307,10 @@ export const deepDives: DeepDive[] = [
         title: "AI tax-compliance engine",
         body: "Python and FastAPI services computing multi-jurisdiction sales tax, VAT, and GST, with AI-assisted classification and a validation layer so every automated decision stays auditable.",
       },
+      {
+        title: "AI data tooling and connector automation",
+        body: "A serverless doc-to-connector factory that crawls API documentation, embeds it with OpenAI and Pinecone, and generates Airbyte low-code connector manifests on AWS Lambda (SAM), plus a natural-language-to-SQL copilot over CRM and Postgres data - turning unstructured docs and plain questions into structured, source-grounded outputs.",
+      },
     ],
     tradeoffs: [
       {
@@ -319,6 +323,11 @@ export const deepDives: DeepDive[] = [
         chose: "Pinecone vector search plus RAG",
         why: "Tax rules and CRM data change constantly and must stay current without retraining; retrieval keeps answers fresh and traceable to a source.",
       },
+      {
+        decision: "Hand-write each data connector vs. generate them from docs",
+        chose: "A doc-to-connector factory: crawl documentation, retrieve with embeddings, generate low-code manifests",
+        why: "New data sources arrived faster than connectors could be hand-authored, so treating documentation as source material and the connector spec as compiled output turned a repetitive integration task into a repeatable pipeline.",
+      },
     ],
     results: [
       { value: "3", label: "enterprise SaaS products built" },
@@ -330,6 +339,7 @@ export const deepDives: DeepDive[] = [
       "Sphere wasn't one product wearing three names - it was three different engineering problems (EdTech, revenue AI, and tax compliance) under one startup clock, and the stable products still had to run through every pivot.",
       "The tax platform couldn't be a clever demo: indirect-tax rules span many jurisdictions and change constantly, so correctness, freshness, and auditability were non-negotiable.",
       "AI in revenue operations only works when a human can see the evidence behind a suggestion, so outputs had to stay source-grounded rather than black-box.",
+      "Every pivot multiplied the external systems to integrate - CRMs, data warehouses, and finance and tax APIs - so onboarding new data sources had to stop being hand-built one connector at a time.",
     ],
     lessons: [
       "A pivot tests architecture - the parts that survive are the boundaries you drew well.",
@@ -337,7 +347,7 @@ export const deepDives: DeepDive[] = [
       "On a small team, reliability isn't a separate role - it has to be built into everyday product work.",
     ],
     contribution:
-      "I worked across Sphere's major pivots - from the Rails and React learning platform to AI revenue workflows and the tax-compliance platform - strongest where product ambiguity met system design: turning fast-moving ideas into reliable APIs, dashboards, integrations, and workflows. I partnered closely with leadership on technical direction while helping the team hold quality and delivery steady through each pivot.",
+      "I worked across Sphere's major pivots - from the Rails and React learning platform to AI revenue workflows, the tax-compliance platform, and the AI data tooling behind them (a doc-to-connector factory and a natural-language-to-SQL copilot) - strongest where product ambiguity met system design: turning fast-moving ideas into reliable APIs, dashboards, integrations, and repeatable pipelines. I partnered closely with leadership on technical direction while helping the team hold quality and delivery steady through each pivot.",
     gallery: [
       {
         src: "/deep-dives/sphere/filings.avif",

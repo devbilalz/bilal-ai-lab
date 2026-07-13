@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Waypoints, X, ArrowRight, CornerDownLeft } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import { homeSections, sitePages } from "@/lib/nav";
+import { sitePages } from "@/lib/nav";
 import { deepDives } from "@/lib/content/deep-dives";
 import { setDeepDiveOrigin } from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
@@ -73,7 +73,7 @@ export function SiteMenu() {
 
   const close = () => setOpen(false);
 
-  const destinations = homeSections.length + sitePages.length + deepDives.length;
+  const destinations = 1 + sitePages.length + deepDives.length;
 
   return (
     <>
@@ -142,7 +142,7 @@ export function SiteMenu() {
                 initial={reduced ? false : "hidden"}
                 animate="visible"
                 exit={reduced ? { opacity: 0 } : "exit"}
-                className="relative mx-auto flex min-h-full max-w-5xl flex-col px-6 py-6"
+                className="relative mx-auto flex min-h-full max-w-2xl flex-col px-6 py-6"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Console header */}
@@ -170,35 +170,33 @@ export function SiteMenu() {
                   </button>
                 </div>
 
-                <div className="mt-10 grid flex-1 gap-12 md:grid-cols-2">
-                  {/* In-page sections */}
+                <div className="mt-10 flex flex-1 flex-col gap-10">
+                  {/* Main page - a single destination (the full walkthrough
+                      already lives on the right-side rail, so no duplicate list) */}
                   <div>
                     <p className="flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-widest text-subtle">
-                      <span className="text-accent">//</span> Get to know me
+                      <span className="text-accent">//</span> Main
                     </p>
-                    <motion.ul variants={listV} className="mt-4 space-y-0.5">
-                      {homeSections.map((s, i) => (
-                        <motion.li key={s.id} variants={itemV}>
-                          <Link
-                            href={`/#${s.id}`}
-                            onClick={close}
-                            className="group relative flex items-baseline gap-4 rounded-lg px-4 py-2.5 transition-colors hover:bg-surface/70"
-                          >
-                            {/* activation bar */}
-                            <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_var(--accent-glow)] transition-all duration-300 group-hover:h-3/5" />
-                            <span className="w-6 shrink-0 font-mono text-[0.7rem] tabular-nums text-subtle transition-colors group-hover:text-accent">
-                              {String(i + 1).padStart(2, "0")}
-                            </span>
-                            <span className="text-base font-medium text-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-accent">
-                              {s.label}
-                            </span>
-                            <span className="ml-auto text-right text-xs text-subtle transition-colors group-hover:text-muted">
-                              {s.desc}
-                            </span>
-                            <ArrowRight className="size-3.5 shrink-0 -translate-x-1 self-center text-accent opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
-                          </Link>
-                        </motion.li>
-                      ))}
+                    <motion.ul variants={listV} className="mt-4">
+                      <motion.li
+                        variants={itemV}
+                        className="group/card relative overflow-hidden rounded-xl border border-border bg-surface/40 px-4 py-4 transition-colors focus-within:border-accent hover:border-accent"
+                      >
+                        <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-accent/[0.07] to-transparent transition-transform duration-700 group-hover/card:translate-x-full" />
+                        <Link
+                          href="/#top"
+                          onClick={close}
+                          className="group relative flex flex-col"
+                        >
+                          <span className="flex items-center gap-2 font-mono text-base font-medium text-foreground group-hover:text-accent">
+                            <span className="text-accent">~</span> / home
+                            <ArrowRight className="size-3.5 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                          </span>
+                          <span className="mt-1 text-xs text-muted">
+                            The full walkthrough - inference, systems, trajectory, evidence.
+                          </span>
+                        </Link>
+                      </motion.li>
                     </motion.ul>
                   </div>
 

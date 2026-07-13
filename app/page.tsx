@@ -7,15 +7,20 @@ import { SkillsMap } from "@/features/skills/skills-map";
 import { MetricsStrip } from "@/features/metrics/metrics-strip";
 import { EvidenceVault } from "@/features/evidence/evidence-vault";
 import { Principles } from "@/features/principles/principles";
-import { CurrentlyBuilding } from "@/features/building/currently-building";
-import { EngineeringNotes } from "@/features/notes/engineering-notes";
-import { Contact } from "@/features/contact/contact";
+import { BeyondTheCode } from "@/features/beyond/beyond";
 
 /**
- * Home - single-scroll narrative. S1-S8 + S13 are real; S11 (Code Lab) stays an
- * honest placeholder pending repo-curation. Case Files / System Design / Resources
- * live on dedicated routes.
+ * Home - single-scroll narrative. "Under the Hood" maps the Gemini Gym pipeline
+ * and where the work is headed; metrics quantify the outcomes before the growth
+ * arc; principles fold in the hard-won lessons; Evidence closes the case.
+ * Contact lives in the footer. Case Files / System Design / Resources live on
+ * dedicated routes.
+ *
+ * `xl:pr-40` on each section leaves a right gutter so the fixed section rail
+ * (shown at xl+) never overlaps content.
  */
+const GUTTER = "xl:pr-20";
+
 export default function Home() {
   return (
     <>
@@ -24,42 +29,35 @@ export default function Home() {
 
       <SectionShell
         id="mission-control"
-        eyebrow="Mission Control"
-        title="What I've built, and how it connects"
+        eyebrow="Under the Hood"
+        title="What I've built, and where it's headed"
+        className={GUTTER}
       >
         <MissionControl />
       </SectionShell>
 
-      <SectionShell id="timeline" eyebrow="Career Path" title="How I've grown">
-        <Timeline />
-      </SectionShell>
-
-      <SectionShell id="skills" eyebrow="Expertise Map" title="Where I specialize">
-        <SkillsMap />
-      </SectionShell>
-
-      <SectionShell id="metrics" eyebrow="Metrics" title="Scale of the work">
+      <SectionShell id="metrics" eyebrow="Metrics" title="The impact, in numbers" className={GUTTER}>
         <MetricsStrip />
       </SectionShell>
 
-      <SectionShell id="evidence" eyebrow="Evidence Vault" title="Why trust the claims">
-        <EvidenceVault />
+      <SectionShell id="timeline" eyebrow="Trajectory" title="How I've grown" className={GUTTER}>
+        <Timeline />
       </SectionShell>
 
-      <SectionShell id="principles" eyebrow="Principles" title="How I think">
+      <SectionShell id="skills" eyebrow="Expertise Map" title="Where I specialize" className={GUTTER}>
+        <SkillsMap />
+      </SectionShell>
+
+      <SectionShell id="principles" eyebrow="Principles" title="How I think" className={GUTTER}>
         <Principles />
       </SectionShell>
 
-      <SectionShell id="building" eyebrow="Currently Building" title="Where I'm headed">
-        <CurrentlyBuilding />
+      <SectionShell id="beyond" eyebrow="Beyond the code" title="Off the clock" className={GUTTER}>
+        <BeyondTheCode />
       </SectionShell>
 
-      <SectionShell id="code-lab" eyebrow="Engineering Notes" title="What the systems taught me">
-        <EngineeringNotes />
-      </SectionShell>
-
-      <SectionShell id="contact" eyebrow="Let's Build" title="Let's build something">
-        <Contact />
+      <SectionShell id="evidence" eyebrow="Feedback & Honors" title="What others say" className={GUTTER}>
+        <EvidenceVault />
       </SectionShell>
     </>
   );

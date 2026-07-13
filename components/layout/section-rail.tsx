@@ -59,10 +59,18 @@ export function SectionRail() {
   const progressPath =
     activeIndex >= 1 ? toPath(points.slice(0, activeIndex + 1)) : "";
 
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    window.history.pushState(null, "", `#${id}`);
+    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  };
+
   return (
     <nav
       aria-label="Page sections"
-      className="fixed right-6 top-1/2 hidden -translate-y-1/2 lg:block"
+      className="fixed right-6 top-1/2 hidden -translate-y-1/2 xl:block"
       style={{ zIndex: "var(--z-raised)" }}
     >
       <div className="relative" style={{ height: HEIGHT }}>
@@ -174,9 +182,10 @@ export function SectionRail() {
             >
               <Link
                 href={`/#${s.id}`}
+                onClick={(e) => scrollToSection(e, s.id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "block whitespace-nowrap text-right text-xs transition-colors duration-300 hover:text-foreground",
+                  "block whitespace-nowrap rounded-full px-2 py-1 text-right text-xs transition-colors duration-300 hover:bg-surface/70 hover:text-foreground",
                   isActive
                     ? "font-medium text-accent [text-shadow:0_0_12px_var(--accent-glow)]"
                     : "text-subtle",

@@ -15,13 +15,17 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-dvh scroll-mt-20 flex-col items-center justify-start px-6 pt-6 sm:pt-10"
+      className="relative flex min-h-dvh scroll-mt-20 flex-col justify-start pt-6 sm:pt-10"
     >
       <h1 className="sr-only">
         {site.person} - {site.title}
       </h1>
       <HeroConstellation />
-      <HeroConsole />
+      {/* Same container as SectionShell so the console's left edge lines up
+          with every heading and section below it. */}
+      <div className="mx-auto w-full max-w-6xl px-6 xl:pr-20">
+        <HeroConsole />
+      </div>
     </section>
   );
 }

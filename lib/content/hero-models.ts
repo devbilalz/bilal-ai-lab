@@ -51,7 +51,6 @@ export const heroModels: HeroModel[] = [
     ],
     chips: [
       "Google Gemini",
-      "6+ Years",
       "3 Industries",
       "Team Leadership",
       "End-to-End",
@@ -77,7 +76,6 @@ export const heroModels: HeroModel[] = [
     ],
     chips: [
       "Google Gemini",
-      "6+ Years",
       "Enterprise SaaS",
       "Healthcare",
       "AI Infrastructure",
@@ -101,7 +99,7 @@ export const heroModels: HeroModel[] = [
         t: " to serverless, event-driven automation. 6+ years building production APIs, microservices, and distributed data pipelines across AI, enterprise SaaS, and healthcare.",
       },
     ],
-    chips: ["10K Req/Min", "6+ Years", "HIPAA Compliance", "Microservices", "AWS"],
+    chips: ["10K Req/Min", "HIPAA Compliance", "Microservices", "AWS"],
     ctaHref: "/#stage-joinreflect",
   },
   {
@@ -122,7 +120,6 @@ export const heroModels: HeroModel[] = [
       },
     ],
     chips: [
-      "6+ Years",
       "Team Leadership",
       "Python & JS",
       "3 Industries",

@@ -1,103 +1,149 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
-import { Reveal } from "@/components/animations/reveal";
-import { principles, personalInterest } from "@/lib/content/principles";
+import { principles } from "@/lib/content/principles";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import { BrainBackground } from "./brain-background";
 
 /**
- * S7 Engineering Principles - brain-themed: an ambient neural background,
- * emoji-tagged principle cards, and a prominent "beyond the code" callout.
+ * S7 Principles - single-word values, not sentences. Same interaction language
+ * as the old Field Notes: colored panels that expand on hover/focus and collapse
+ * to slim spines, each owning a hue. Pagination dots under the row make it clear
+ * there are multiple items and let you scrub between them. The final entry is an
+ * honest growing edge, tagged distinctly.
  */
-
-/** One emoji per principle, in the order they're authored. */
-const principleIcons = ["\u{1F6E1}\uFE0F", "\u{1F9E9}", "\u{1F501}", "\u{1F50D}"];
-
-const interests: [string, string][] = [
-  ["\u{2708}\uFE0F", "travel"],
-  ["\u{1F35C}", "good food"],
-  ["\u{1F6B6}", "long walks"],
-];
-
 export function Principles() {
   const reduced = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
 
   return (
     <div className="relative">
       <BrainBackground />
 
-      <div className="relative space-y-8">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {principles.map((p, i) => (
-            <Reveal key={p.title} delay={i * 0.06}>
-              <motion.div
-                whileHover={reduced ? undefined : { y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                className="group h-full rounded-2xl border border-border bg-surface/50 p-5 backdrop-blur-sm transition-colors hover:border-accent/40 hover:bg-surface/70"
+      <div className="relative">
+        <div className="flex flex-col gap-3 md:h-[240px] md:flex-row md:gap-2.5">
+          {principles.map((p, i) => {
+            const isActive = i === active;
+            return (
+              <div
+                key={p.word}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isActive}
+                aria-label={`${p.word}: ${p.note}`}
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                onClick={() => setActive(i)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setActive(i);
+                }}
+                style={{
+                  flexGrow: isActive ? 6 : 1,
+                  borderColor: isActive ? `${p.accent}66` : "var(--border)",
+                  background: isActive
+                    ? `linear-gradient(135deg, ${p.accent}22, color-mix(in srgb, var(--surface) 70%, transparent) 55%)`
+                    : undefined,
+                  boxShadow:
+                    isActive && !reduced
+                      ? `0 0 44px ${p.accent}26, inset 0 0 0 1px ${p.accent}1f`
+                      : undefined,
+                }}
+                className="group relative isolate cursor-pointer overflow-hidden rounded-2xl border bg-surface/40 outline-none backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent md:min-w-0 md:basis-0"
               >
-                <div className="flex items-center gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-border bg-background-elevated text-xl transition-transform duration-300 group-hover:scale-110 group-hover:border-accent/40">
-                    {principleIcons[i] ?? "\u{1F9E0}"}
-                  </span>
-                  <h3 className="text-base font-semibold text-foreground">
-                    {p.title}
+                {/* colored top edge that lights up when active */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-0.5 transition-opacity duration-500"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${p.accent}, transparent)`,
+                    opacity: isActive ? 1 : 0.25,
+                  }}
+                />
+
+                {/* Expanded content - always on mobile, on desktop only when active */}
+                <div
+                  className={`flex h-full flex-col justify-center p-5 transition-opacity duration-300 sm:p-6 ${
+                    isActive
+                      ? "md:opacity-100"
+                      : "md:pointer-events-none md:opacity-0"
+                  }`}
+                >
+                  {p.growth && (
+                    <span
+                      className="mb-2 inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[0.58rem] uppercase tracking-widest"
+                      style={{
+                        borderColor: `${p.accent}66`,
+                        color: p.accent,
+                      }}
+                    >
+                      <span
+                        className="inline-block size-1.5 rounded-full"
+                        style={{ background: p.accent }}
+                      />
+                      growing edge
+                    </span>
+                  )}
+                  <h3
+                    className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+                    style={{ textShadow: isActive ? `0 0 24px ${p.accent}44` : undefined }}
+                  >
+                    {p.word}
                   </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted md:max-w-md">
+                    {p.note}
+                  </p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted">
-                  {p.body}
-                </p>
-              </motion.div>
-            </Reveal>
-          ))}
+
+                {/* Collapsed spine - desktop only, when not active */}
+                <div
+                  aria-hidden
+                  className={`absolute inset-0 hidden flex-col items-center justify-between p-4 ${
+                    isActive ? "" : "md:flex"
+                  }`}
+                >
+                  <span className="h-2" />
+                  <div className="flex flex-1 items-center justify-center">
+                    <span className="whitespace-nowrap text-sm font-semibold tracking-tight text-foreground/85 [writing-mode:vertical-rl] rotate-180">
+                      {p.word}
+                    </span>
+                  </div>
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ background: p.accent, boxShadow: `0 0 12px ${p.accent}` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <Reveal delay={0.1}>
-          <div className="relative overflow-hidden rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/[0.14] via-surface/60 to-surface/30 p-6 shadow-[0_0_40px_var(--accent-glow)] sm:p-7">
-            <div className="flex items-center gap-2.5">
-              <motion.span
-                aria-hidden
-                className="text-2xl"
-                animate={
-                  reduced
-                    ? undefined
-                    : { scale: [1, 1.14, 1], rotate: [0, -4, 4, 0] }
-                }
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        {/* Pagination dots - make it clear there are multiple values + scrub */}
+        <div className="mt-6 flex items-center justify-center gap-2.5">
+          {principles.map((p, i) => {
+            const isActive = i === active;
+            return (
+              <button
+                key={p.word}
+                type="button"
+                onClick={() => setActive(i)}
+                aria-label={`Show ${p.word}`}
+                aria-current={isActive ? "true" : undefined}
+                className="group grid place-items-center p-1"
               >
-                {"\u{1F9E0}"}
-              </motion.span>
-              <span className="font-mono text-[0.62rem] uppercase tracking-widest text-accent">
-                Beyond the code
-              </span>
-            </div>
-
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground sm:text-lg">
-              {personalInterest}
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {interests.map(([emoji, label], i) => (
                 <motion.span
-                  key={label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background-elevated/70 px-3 py-1.5 text-sm text-muted"
-                  animate={reduced ? undefined : { y: [0, -3, 0] }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                    ease: "easeInOut",
+                  className="block h-2 rounded-full"
+                  style={{
+                    background: isActive ? p.accent : "var(--border-strong)",
+                    boxShadow: isActive ? `0 0 10px ${p.accent}` : undefined,
                   }}
-                >
-                  <span aria-hidden className="text-base">
-                    {emoji}
-                  </span>
-                  {label}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </Reveal>
+                  animate={{ width: isActive ? 22 : 8 }}
+                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -7,14 +7,13 @@
  */
 export const homeSections = [
   { id: "top", label: "Inference", desc: "Query the model - what do I build?" },
-  { id: "mission-control", label: "Mission Control", desc: "The Gemini Gym pipeline, mapped." },
-  { id: "timeline", label: "Career Path", desc: "How I grew into AI infrastructure." },
-  { id: "skills", label: "Expertise", desc: "Where I specialize." },
+  { id: "mission-control", label: "Under the Hood", desc: "The Gemini Gym pipeline and where it's headed." },
   { id: "metrics", label: "Metrics", desc: "The scale of the work." },
-  { id: "evidence", label: "Evidence", desc: "Why the claims hold up." },
+  { id: "timeline", label: "Trajectory", desc: "How I grew into AI infrastructure." },
+  { id: "skills", label: "Expertise", desc: "Where I specialize." },
   { id: "principles", label: "Principles", desc: "How I think about engineering." },
-  { id: "building", label: "Building", desc: "Where I'm headed next." },
-  { id: "code-lab", label: "Engineering Notes", desc: "Lessons from real systems." },
+  { id: "beyond", label: "Beyond the code", desc: "Life outside the terminal." },
+  { id: "evidence", label: "Feedback", desc: "What others say, and honors earned." },
   { id: "contact", label: "Contact", desc: "Let's build something." },
 ] as const;
 
