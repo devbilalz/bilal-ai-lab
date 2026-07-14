@@ -1,8 +1,6 @@
 /**
  * The simulated real-world services behind the Generalized Agent APIs (Gemini
- * Gym). Categorized list transcribed from
- * `Turing Projects Overview/GEMINI_GYM_PROJECT_OVERVIEW.md` (Pillar 1).
- * ~77 services total; these are the named, representative ones.
+ * Gym). ~77 services total; these are the named, representative ones.
  */
 export interface ApiCategory {
   name: string;
@@ -64,7 +62,7 @@ export const apiCatalog: ApiCategory[] = [
   },
   {
     name: "Dev / IDE agents",
-    items: ["Cursor", "Copilot", "Claude Code", "Gemini CLI", "Terminal", "Puppeteer"],
+    items: ["VS Code", "Copilot", "Claude Code", "Gemini CLI", "Terminal", "Puppeteer"],
   },
   {
     name: "Device & system-level",

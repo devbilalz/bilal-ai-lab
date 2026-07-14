@@ -176,8 +176,8 @@ export default async function DeepDivePage({
             <p className="text-muted">{dd.contribution}</p>
           ) : (
             <Placeholder
-              node="S9.contribution"
-              label="What Bilal personally built vs. the team - to be drawn honestly with Bilal before this ships publicly."
+              node="contribution"
+              label="Personal contribution vs. the team - pending."
             />
           )}
         </Block>
@@ -274,8 +274,8 @@ export default async function DeepDivePage({
             </ul>
           ) : (
             <Placeholder
-              node="S9.challenges"
-              label="Deeper engineering war-stories (what broke, what was tried first, what changed) - to capture from Bilal, not invented."
+              node="challenges"
+              label="Deeper engineering war-stories (what broke, what was tried first, what changed) - pending."
             />
           )}
         </Block>
@@ -292,8 +292,8 @@ export default async function DeepDivePage({
             </ul>
           ) : (
             <Placeholder
-              node="S9.lessons"
-              label="2-4 real lessons per project (what surprised me / what I'd do differently) - to capture from Bilal."
+              node="lessons"
+              label="2-4 real lessons per project (what surprised me / what I'd do differently) - pending."
             />
           )}
         </Block>

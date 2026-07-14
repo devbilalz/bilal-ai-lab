@@ -1,7 +1,7 @@
 /**
  * S4 Skills Map. Grouped exactly as the finalized resume's Technical Skills
  * (AI/LLM first). Each skill carries an "applied at" context so no skill is a
- * bare tag - it maps to a real place it was used (dev plan acceptance criteria).
+ * bare tag - it maps to a real place it was used.
  */
 
 export interface Skill {

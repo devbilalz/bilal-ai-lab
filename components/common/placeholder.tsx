@@ -1,15 +1,15 @@
 import { cn } from "@/lib/utils";
 
 /**
- * F10 - honest placeholder for content that is not yet supplied (dev plan §8).
- * Never fabricate data; render this instead so gaps stay visible and trackable.
+ * Placeholder for content that is not yet supplied. Rendered instead of copy
+ * so gaps stay visible rather than being filled with guesses.
  */
 export function Placeholder({
   node,
   label,
   className,
 }: {
-  /** Node id from the development plan, e.g. "S6.2". */
+  /** Optional internal id for the pending slot. */
   node?: string;
   label: string;
   className?: string;

@@ -1,7 +1,6 @@
 /**
- * Single source of truth for identity + links (F6).
- * Real values from the finalized resume / LinkedIn.
- * TODO markers are placeholders awaiting confirmation (see dev plan §8).
+ * Single source of truth for identity + links.
+ * Values from the resume / LinkedIn.
  */
 
 /**

@@ -1,17 +1,14 @@
 /**
  * S2 Mission Control + S9 Case File source data.
  *
- * STRUCTURE (per Bilal): "Gemini Gym" is the umbrella program at Turing (for
- * Google). It contains THREE components:
- *   - Generalized Agent APIs (google-agents-api-gen) - the simulation environment
+ * STRUCTURE: "Gemini Gym" is the umbrella program at Turing (for Google). It
+ * contains THREE components:
+ *   - Generalized Agent APIs - the simulation environment
  *   - DBGen - synthetic world-generation engine
  *   - Benchmark Mutation Suite - robustness evaluation
  * Plus two separate Turing projects run alongside it:
  *   - SWE Trajectory Evaluation - human ground-truth grading of agent trajectories
  *   - RLHF / SFT - model fine-tuning across Gemini, Claude, Grok, ServiceNow AI
- *
- * Every field is grounded in `Turing Projects Overview/` docs + the resume.
- * No invented metrics.
  */
 
 export type ProjectStatus = "shipped" | "hardening" | "ongoing";

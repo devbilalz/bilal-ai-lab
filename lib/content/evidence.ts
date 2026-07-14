@@ -15,7 +15,7 @@ export interface EvidenceItem {
   ext: string;
   /** Human title - never a bare filename. */
   title: string;
-  /** Context caption - never a bare title (dev plan acceptance criteria). */
+  /** Context caption - never a bare title. */
   context: string;
   /** Real metadata chips only (dates, grade, place). Never fabricated. */
   meta: string[];

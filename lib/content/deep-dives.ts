@@ -1,16 +1,13 @@
 /**
- * S9 Case File content. Grounded in the `Turing Projects Overview/` docs.
+ * Case File content.
  *
- * CONFIDENTIALITY: internal identifiers (repo names, protobuf/type names,
- * internal spec IDs, validator version tags) are intentionally scrubbed pending
- * Bilal's sign-off - described functionally with clean project names only, per
- * the same discipline used on the resume.
+ * Internal identifiers (repo names, type names, spec IDs, validator version
+ * tags) are intentionally omitted - systems are described functionally with
+ * clean project names only.
  *
- * HONESTY MECHANISM: `challenges`, `lessons`, and `contribution` may be null.
- * Null => the page renders an honest <Placeholder/> instead of invented copy;
- * never fabricate these. All entries are currently populated from the source
- * docs, but the nullable design stays so future additions can ship with gaps
- * shown honestly rather than filled with guesses.
+ * `challenges`, `lessons`, and `contribution` may be null. Null => the page
+ * renders a <Placeholder/> instead of copy; the nullable design lets future
+ * additions ship with gaps shown honestly rather than filled with guesses.
  */
 
 export interface DeepDive {
