@@ -6,20 +6,36 @@
  * Bilal's sign-off - described functionally with clean project names only, per
  * the same discipline used on the resume.
  *
- * GAPS: `challenges`, `lessons`, and `contribution` are null where the source
- * docs are written as pitches rather than engineering journeys. Null => the page
- * renders an honest <Placeholder/>; never fabricate these.
+ * HONESTY MECHANISM: `challenges`, `lessons`, and `contribution` may be null.
+ * Null => the page renders an honest <Placeholder/> instead of invented copy;
+ * never fabricate these. All entries are currently populated from the source
+ * docs, but the nullable design stays so future additions can ship with gaps
+ * shown honestly rather than filled with guesses.
  */
 
 export interface DeepDive {
   slug: string;
   title: string;
   tagline: string;
+  /** Quick-facts strip: real org, period, stack, and delivery status. */
+  facts: {
+    org: string;
+    period: string;
+    stack: string[];
+    status: string;
+  };
   problem: string;
   constraints: string[];
   architecture: { title: string; body: string }[];
   tradeoffs: { decision: string; chose: string; why: string }[];
-  results: { value: string; label: string }[];
+  /**
+   * `metric` => a genuine number, rendered as a big-number card.
+   * `fact`   => a qualitative outcome, rendered as a labelled fact row (not
+   *             dressed up as a metric). Defaults to `metric` when omitted.
+   */
+  results: { value: string; label: string; kind?: "metric" | "fact" }[];
+  /** Optional honesty caption under Results (e.g. platform-today attribution). */
+  resultsNote?: string;
   /** From the docs where documented; null => needs Bilal. */
   challenges: string[] | null;
   /** Needs Bilal (interview). */
@@ -35,6 +51,12 @@ export const deepDives: DeepDive[] = [
     slug: "agent-apis",
     title: "Generalized Agent APIs",
     tagline: "The core of the Gemini Gym: a deterministic sandbox for training and grading Gemini on real-world tool use.",
+    facts: {
+      org: "Turing (Google / Gemini)",
+      period: "Jun 2024 - Present",
+      stack: ["Python", "FastAPI", "Pydantic", "Function Calling"],
+      status: "Shipped",
+    },
     problem:
       "Training or evaluating an agentic model against live production APIs (real Gmail, Slack, Jira, Salesforce) is risky, non-reproducible, and rate-limited. Worse, when an eval fails you can't tell if the model was wrong or the tool's schema was ambiguous - there's no ground truth, and you can't ask a real API to 'pretend to time out' to test recovery.",
     constraints: [
@@ -53,19 +75,19 @@ export const deepDives: DeepDive[] = [
         body: "Every service exposes strict function-call schemas auto-generated from the code itself, so the interface the model learns can never silently drift from the implementation.",
       },
       {
-        title: "6-layer validation pipeline",
-        body: "A custom validator enforcing API compatibility, quality rules, cross-provider compatibility (Google/OpenAI/Anthropic), runtime checks, and model-spec-to-signature alignment - catching schema defects the standard GenAI SDK silently accepts.",
+        title: "Multi-stage schema validation",
+        body: "A custom validation layer checks tool definitions for correctness and cross-provider compatibility before training, catching ambiguous or broken schemas that standard SDKs accept silently - so a bad contract never becomes learned model behavior.",
       },
       {
         title: "Realism + controllability",
-        body: "sim2real parity suites prove the sim matches real query syntax; a runtime feature manager injects errors, toggles auth, and mutates schemas on demand; full call-logging captures multi-turn trajectories for replay and scoring.",
+        body: "Parity tests check the simulation behaves like the real services; a fault-injection layer can trigger errors, auth failures, and edge cases on demand; and full call-logging captures multi-turn trajectories for replay and scoring.",
       },
     ],
     tradeoffs: [
       {
         decision: "Simulate services vs. test against live APIs",
         chose: "Simulate",
-        why: "Buys determinism, safety, and unlimited scale; the fidelity risk is bought back with sim2real parity tests that prove behavioral equivalence.",
+        why: "Buys determinism, safety, and unlimited scale; the fidelity risk is bought back with parity tests that prove behavioral equivalence.",
       },
       {
         decision: "Auto-generate schemas vs. hand-author them",
@@ -73,9 +95,9 @@ export const deepDives: DeepDive[] = [
         why: "Eliminates schema drift - the contract the model sees is always the contract the code implements.",
       },
       {
-        decision: "Custom validator vs. trust the GenAI SDK",
-        chose: "Custom 6-layer validator",
-        why: "The SDK silently accepts ambiguous/broken tool definitions that teach the model bad habits; validating at the source protects accuracy before training.",
+        decision: "Custom validation vs. trust the standard SDK",
+        chose: "A custom validation layer",
+        why: "Standard SDKs silently accept ambiguous/broken tool definitions that teach the model bad habits; validating at the source protects accuracy before training.",
       },
     ],
     results: [
@@ -92,16 +114,22 @@ export const deepDives: DeepDive[] = [
     ],
     lessons: [
       "A model eval is only as good as the tool contract behind it.",
-      "Simulation needs proof - sim2real tests are what turn a mock into infrastructure.",
+      "Simulation needs proof - parity tests are what turn a mock into infrastructure.",
       "If quality depends on people remembering rules, the system isn't ready to scale.",
     ],
     contribution:
-      "I worked across the whole environment, not one slice of it. I built simulated services with real business logic, strictly-typed models, and persisted mock state; the auto-generated function-call contracts (via a tool-spec decorator) so the schema Gemini sees can never drift from the code; and the 6-layer function-call validator that catches defects Google's own SDK silently accepts. I also built the realism-and-control layer - sim2real parity suites, the runtime feature manager for error, auth, and schema-mutation injection, full multi-turn call-logging, and the scenario and regression suites across 36+ services - plus the CI, typing, and auto-generated docs that keep the whole thing production-grade as it scales to each new service.",
+      "I worked across the whole environment, not one slice of it. I built simulated services with real business logic, strictly-typed models, and persisted state; a system that generates the tool-call schemas directly from the implementation so the interface the model sees can't drift from the code; and a custom validation layer that catches ambiguous or broken tool contracts that standard SDKs accept silently. I also built the realism-and-control layer - parity tests that check the simulation behaves like the real services, a fault-injection layer for errors, auth failures, and edge cases, full multi-turn call-logging, and scenario and regression suites across 36+ services - plus the CI, typing, and generated docs that keep the whole thing production-grade as it scales to each new service.",
   },
   {
     slug: "dbgen",
     title: "Synthetic World Engine",
     tagline: "Turns a one-paragraph brief into a schema-exact, narratively coherent training world - plus its grading rubric.",
+    facts: {
+      org: "Turing (Google / Gemini)",
+      period: "Jun 2024 - Present",
+      stack: ["Python", "FastAPI", "Pydantic", "LLM pipelines"],
+      status: "Hardening",
+    },
     problem:
       "A gym needs a populated, believable world behind every simulated API - the actual files, messages, issues, permissions, people and story that connect them. Hand-authoring these fixtures doesn't scale past a handful, so every new scenario, difficulty tier, and distractor pattern becomes a manual authoring project and a bottleneck on training data.",
     constraints: [
@@ -116,16 +144,16 @@ export const deepDives: DeepDive[] = [
         body: "One shared engine generates worlds for Google Drive, Slack, and Jira today; adding a new service is a bounded plug-in, not a rewrite.",
       },
       {
-        title: "Story-first generation pipeline",
-        body: "Spec → authored 'world bible' → dependency graph → generation → cross-record reconciliation → schema-exact projection, so records reference real people and reply to real comments.",
+        title: "Story-first generation",
+        body: "Starts from a short brief, builds one coherent backstory, then generates records that reference the same people, projects, and dates - so the world reads as internally consistent rather than disconnected stub data, and finally exports it in the exact target schema.",
       },
       {
         title: "Rubric authored alongside the world",
-        body: "Hard/soft, deterministic and LLM-judged checks tied back to source scenario facts, with producer/verifier separation so grading is a first-class, traceable output.",
+        body: "Hard/soft, deterministic and LLM-judged checks tied back to source scenario facts, with generation and grading kept separate so the rubric is a first-class, traceable output.",
       },
       {
         title: "Deep observability",
-        body: "Every run keeps a full trace and per-record provenance, so any output field traces back to the exact generation step and model call that produced it.",
+        body: "Every run is fully traceable, so any generated field can be traced back to what produced it.",
       },
     ],
     tradeoffs: [
@@ -136,19 +164,19 @@ export const deepDives: DeepDive[] = [
       },
       {
         decision: "Story-driven generation vs. independent record synthesis",
-        chose: "Single world bible",
+        chose: "One shared backstory",
         why: "Produces one coherent narrative instead of disconnected stub records that a model (or grader) could tell apart from real data.",
       },
     ],
     results: [
-      { value: "3", label: "production SaaS surfaces" },
+      { value: "3", label: "production SaaS surfaces (Drive, Slack, Jira)" },
       { value: "3", label: "Gemini generations validated as authors" },
-      { value: "live", label: "multi-turn agent-loop QA rig" },
+      { value: "Live QA harness", label: "multi-turn validation against real schemas", kind: "fact" },
     ],
     // Documented in the "honest status" section of the source doc.
     challenges: [
       "Content-quality gaps on weaker/faster model generations (e.g. empty generated bodies) surfaced only under real multi-model traffic.",
-      "A required schema field silently generated as null failed live tool calls - caught by the agent-loop QA rig before it could corrupt downstream training data.",
+      "A required schema field silently generated as null failed live tool calls - caught by the live QA harness before it could corrupt downstream training data.",
       "Rubric-fidelity audits found graders that invented constraints or double-counted a fact as two checks - a flawed rubric damages a training signal as much as flawed data.",
     ],
     lessons: [
@@ -157,12 +185,18 @@ export const deepDives: DeepDive[] = [
       "Generation pipelines need record-level observability, because one broken field can invalidate a whole scenario.",
     ],
     contribution:
-      "I worked across every phase of the engine, end to end. On generation, I built the story-first pipeline that turns a one-paragraph brief into a schema-exact world - world bible, dependency graph, cross-record reconciliation, and drop-in projection - across Google Drive, Slack, and Jira on one shared, service-agnostic engine. On grading, I authored the rubric layer (hard and soft, deterministic and LLM-judged checks) so every world ships gradeable, tied back to the source scenario. On evaluation, I ran the multi-model generation trials and built the live agent-loop QA rig that drives a real Gemini agent through a generated world and validates every response against the real schema. And on scaling and quality, I hardened the engine under real Gemini traffic - closing content-quality gaps, adding resilience to transient model-API failures, and wiring per-record provenance so any bad field traces back to the exact step that produced it.",
+      "I worked across every phase of the engine, end to end. On generation, I built the story-first pipeline that turns a one-paragraph brief into a schema-exact world across Google Drive, Slack, and Jira on one shared, service-agnostic engine. On grading, I authored the rubric layer (hard and soft, deterministic and LLM-judged checks) so every world ships gradeable, tied back to the source scenario. On evaluation, I ran the multi-model generation trials and built a live QA harness that drives a real Gemini agent through a generated world and validates every response against the real schema. And on scaling and quality, I hardened the engine under real Gemini traffic - closing content-quality gaps, adding resilience to transient model-API failures, and wiring in full traceability so any bad field can be traced back to what produced it.",
   },
   {
     slug: "benchmark-suite",
     title: "Benchmark Mutation Suite",
     tagline: "Stress-tests how gracefully Gemini degrades when tool-use conditions get messy - vs. GPT and Claude.",
+    facts: {
+      org: "Turing (Google / Gemini)",
+      period: "Jun 2024 - Present",
+      stack: ["Python", "Docker", "LLM eval"],
+      status: "Ongoing",
+    },
     problem:
       "Standard benchmarks only measure performance under ideal conditions. But real agentic deployments see incomplete or renamed tool schemas, context cluttered with irrelevant tools, inputs arriving as images or files, and environments that block native function-calling entirely. The harder, more important question: how much does performance degrade under messy conditions, and does it degrade gracefully or catastrophically?",
     constraints: [
@@ -174,11 +208,11 @@ export const deepDives: DeepDive[] = [
     architecture: [
       {
         title: "Transparent call interception",
-        body: "Every LLM call is intercepted inside an isolated container without the benchmark ever knowing, so any benchmark can be onboarded cheaply.",
+        body: "LLM calls are intercepted and adapted without the benchmark's knowledge and without editing its source, so a new benchmark can be onboarded cheaply.",
       },
       {
-        title: "16 mutations across 4 categories",
-        body: "Schema (strip docs, rename functions, inject noise), modality (text → image/audio/file), call-format (force text/XML/JSON instead of native function calling), and indirection (hide the query or tools behind a file the model must discover).",
+        title: "A library of 16 tool-presentation perturbations",
+        body: "Systematic ways to make tool use harder - renaming or under-documenting tools, shifting inputs into other modalities (image/audio/file), forcing non-native call formats, or hiding the query behind a file the model must discover first.",
       },
       {
         title: "Composable, incremental degradation",
@@ -219,12 +253,18 @@ export const deepDives: DeepDive[] = [
       "The most useful eval output isn't a score - it's a failure mode the training loop can act on.",
     ],
     contribution:
-      "I built the harness end to end. The core is a transparent interception layer that runs inside an isolated container per benchmark and rewrites each tool-use call on the way to the model - stripping docs, renaming functions, shifting modality, forcing non-native call formats, or hiding the query behind a file the model must discover - then reverses the mutation before grading so results stay directly comparable to published baselines, with zero edits to benchmark source. I designed the 16 mutations across four categories to compose one at a time, and built the registry so a new benchmark or a new mutation plugs in with no orchestrator changes. That let me run Gemini head-to-head against GPT and Claude under identical adversarial conditions, and package every run as standardized trajectory data so each discovered weakness flows straight back into Gemini's training loop instead of dying in a report.",
+      "I built the harness end to end. The core is a transparent interception layer that adapts each tool-use call on the way to the model - stripping docs, renaming functions, shifting modality, forcing non-native call formats, or hiding the query behind a file the model must discover - then reverses the change before grading so results stay directly comparable to published baselines, with no edits to benchmark source. I designed the perturbations to compose one at a time, and built the framework so a new benchmark or a new perturbation plugs in easily. That let me run Gemini head-to-head against GPT and Claude under identical adversarial conditions, and package every run as standardized trajectory data so each discovered weakness flows straight back into the training loop instead of dying in a report.",
   },
   {
     slug: "swe-evaluation",
     title: "SWE Trajectory Evaluation",
     tagline: "The human-referee layer that produces the trusted answer key for how well models grade AI coding work.",
+    facts: {
+      org: "Turing",
+      period: "2024 - Present",
+      stack: ["Python", "Rubric design", "CSV/Excel tooling"],
+      status: "Ongoing",
+    },
     problem:
       "Coding agents (Claude, Gemini, GPT) fix bugs across many small steps - reading files, running commands, editing code, summarizing. Finishing a task doesn't mean it was done well: an agent may do things it was told not to, fabricate results ('tests passed' when nothing ran), waste time, skip testing, or write unprofessionally. Models are now asked to grade themselves and each other - so someone trustworthy has to produce the ground-truth labels those self-grades are measured against.",
     constraints: [
@@ -248,7 +288,7 @@ export const deepDives: DeepDive[] = [
       },
       {
         title: "Tooling-assisted tracking",
-        body: "A tools/ pipeline ingests the CSV/Excel datasets, consolidates every model's flagged issues, and generates a ready-to-fill tracking sheet with the right per-tag verdict and step-number columns.",
+        body: "A small tooling pipeline ingests the datasets, consolidates every model's flagged issues, and generates a ready-to-fill tracking sheet with the right per-tag verdict and step-number columns.",
       },
     ],
     tradeoffs: [
@@ -266,8 +306,8 @@ export const deepDives: DeepDive[] = [
     results: [
       { value: "15", label: "quality tags per judgment" },
       { value: "4", label: "quality themes covered" },
-      { value: "trace + step", label: "evaluation granularities" },
-      { value: "ground truth", label: "human labels as the answer key" },
+      { value: "Trace + step", label: "two evaluation granularities", kind: "fact" },
+      { value: "Ground truth", label: "human labels as the answer key", kind: "fact" },
     ],
     challenges: [
       "A model can finish the task and still fail the job - skip tests, ignore an instruction, or claim a success it never verified - so 'done' was never the same as 'done well'.",
@@ -286,6 +326,12 @@ export const deepDives: DeepDive[] = [
     slug: "sphere",
     title: "Sphere",
     tagline: "Founding-level engineer across three products: EdTech, AI revenue operations, and the world's first AI-powered tax-compliance platform.",
+    facts: {
+      org: "Sphere",
+      period: "Sep 2022 - Sep 2024",
+      stack: ["Python (FastAPI)", "Ruby on Rails", "React", "AWS", "Pinecone"],
+      status: "Shipped",
+    },
     problem:
       "Sphere started as a live, expert-led upskilling platform for data science and machine learning (originally ScholarSite), used by employees from 500+ companies including Apple, Microsoft, Nike, and BCG, and backed by Y Combinator and Felicis. As the company pivoted, it needed to build AI-powered revenue operations and then the world's first AI-powered tax-compliance platform (sales tax, VAT, and GST), all while keeping the existing product running. The engineering challenge: architect core capabilities across three very different products without a large team.",
     constraints: [
@@ -332,8 +378,8 @@ export const deepDives: DeepDive[] = [
     results: [
       { value: "3", label: "enterprise SaaS products built" },
       { value: "500+", label: "companies used the platform" },
-      { value: "world-first", label: "AI-powered tax-compliance platform" },
-      { value: "CEO + CTO", label: "direct technical-roadmap partnership" },
+      { value: "World-first", label: "AI-powered tax-compliance platform", kind: "fact" },
+      { value: "CEO + CTO", label: "direct technical-roadmap partnership", kind: "fact" },
     ],
     challenges: [
       "Sphere wasn't one product wearing three names - it was three different engineering problems (EdTech, revenue AI, and tax compliance) under one startup clock, and the stable products still had to run through every pivot.",
@@ -367,6 +413,12 @@ export const deepDives: DeepDive[] = [
     slug: "duett",
     title: "Duett.io",
     tagline: "Referrals done right: the fastest way for care coordinators to match clients to the right home-health providers.",
+    facts: {
+      org: "Duett.io (via Devsinc)",
+      period: "Jan 2021 - Aug 2022",
+      stack: ["Django", "Flask", "React", "PostgreSQL", "AWS"],
+      status: "Shipped",
+    },
     problem:
       "Coordinating home-health care was slow and manual: care coordinators had to find, vet, and match providers to each care plan by hand, turning referrals into a multi-day process. Duett set out to take a care plan to a matched provider referral in hours, not days - while handling protected health information safely and giving providers a way to grow their network.",
     constraints: [
@@ -396,10 +448,10 @@ export const deepDives: DeepDive[] = [
       },
     ],
     results: [
-      { value: "hours, not days", label: "care plan to provider referral (duett.io)" },
-      { value: "HIPAA", label: "compliant by design" },
-      { value: "matching", label: "engine replaced manual coordination" },
-      { value: "provider growth", label: "two-sided network for coordinators + providers" },
+      { value: "Hours, not days", label: "care plan to matched provider referral", kind: "fact" },
+      { value: "HIPAA", label: "compliant by design, not patched in later", kind: "fact" },
+      { value: "Matching engine", label: "replaced manual provider coordination", kind: "fact" },
+      { value: "Two-sided", label: "network for coordinators and providers", kind: "fact" },
     ],
     challenges: [
       "This wasn't matching restaurants to reviews - it was matching vulnerable patients to care providers, so correctness and trust mattered more than raw speed.",
@@ -418,6 +470,12 @@ export const deepDives: DeepDive[] = [
     slug: "joinreflect",
     title: "JoinReflect",
     tagline: "A digital mental-health platform that predicts therapist fit instead of making patients filter a directory.",
+    facts: {
+      org: "JoinReflect (via Devsinc)",
+      period: "Mar 2020 - Jan 2021",
+      stack: ["Django", "React", "PostgreSQL", "AWS"],
+      status: "Shipped",
+    },
     problem:
       "Getting the right mental-health support is hard: patients struggle to find a therapist who fits, and coordinating ongoing appointments across providers is fragmented. Rather than filter a directory, reflect's approach is matching-first - understanding what a patient needs and predicting which therapist and therapeutic style would actually help, then coordinating scheduling across many independent providers. The engineering had to make that matching and scheduling feel simple and trustworthy with sensitive health data.",
     constraints: [
@@ -447,11 +505,13 @@ export const deepDives: DeepDive[] = [
       },
     ],
     results: [
-      { value: "matching-first", label: "predicts therapist fit vs. directory search" },
-      { value: "100k+", label: "therapy sessions on the platform to date (joinreflect.com)" },
+      { value: "Matching-first", label: "predicts therapist fit vs. directory search", kind: "fact" },
+      { value: "100k+", label: "therapy sessions (platform today)" },
       { value: "4.9 / 5", label: "average therapist rating (platform today)" },
-      { value: "20 states", label: "reflect's reach today, from a matching-first foundation" },
+      { value: "20", label: "states served (platform today)" },
     ],
+    resultsNote:
+      "The 100k+ sessions, 4.9/5 rating, and 20-state reach are JoinReflect's public traction today (joinreflect.com) - built on the matching-first foundation I helped lay in 2020-2021, not metrics I claim as my own.",
     challenges: [
       "Therapist fit is subjective and sensitive - a bad match is costly to a user - so the system had to understand fit, not just filter a directory.",
       "Scheduling conflicts aren't small bugs in mental health; they're moments where a user can lose trust, and the calendar had to coordinate across many independent providers.",
@@ -469,6 +529,12 @@ export const deepDives: DeepDive[] = [
     slug: "rlhf-sft",
     title: "RLHF / SFT Data Curation",
     tagline: "The training-data supply chain behind code-centric fine-tuning across Gemini, Claude, Grok, and ServiceNow AI.",
+    facts: {
+      org: "Turing",
+      period: "Jun 2024 - Present",
+      stack: ["SFT / RLHF", "Python", "Rubric design", "Model eval"],
+      status: "Ongoing",
+    },
     problem:
       "Code-centric model training needs high-quality examples, not just volume. A model is only as good as the data and labels it learns from, so a noisy or inconsistent example doesn't just get ignored - it quietly becomes model behavior. The challenge was to build a curation and review process that could keep quality high across multiple model families and coding stacks, without collapsing under the sheer scale of data required.",
     constraints: [
@@ -512,7 +578,7 @@ export const deepDives: DeepDive[] = [
       { value: "4", label: "model families curated for" },
       { value: "+18%", label: "contextual accuracy" },
       { value: "-45ms", label: "inference latency" },
-      { value: "code-centric", label: "multi-stack training data" },
+      { value: "Code-centric", label: "multi-stack training data", kind: "fact" },
     ],
     challenges: [
       "Noisy or plausible-but-wrong examples slipped in easily and, once trained on, were hard to detect after the fact - the cost of a bad label is paid downstream.",

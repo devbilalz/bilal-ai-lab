@@ -20,6 +20,20 @@ export function getPreviousPath(): string | null {
   return previous;
 }
 
+/** Human label for a known route, used by history-aware "back" controls. */
+const PATH_LABELS: Record<string, string> = {
+  "/": "home",
+  "/deep-dives": "Case Files",
+  "/system-design": "System Design",
+  "/resources": "the resume",
+};
+
+export function pathLabel(path: string): string {
+  if (PATH_LABELS[path]) return PATH_LABELS[path];
+  if (path.startsWith("/deep-dives/")) return "the case file";
+  return "back";
+}
+
 /**
  * The exact surface a deep-dive link was opened from. Path history alone can't
  * distinguish sections that share a URL (the chat console and Mission Control

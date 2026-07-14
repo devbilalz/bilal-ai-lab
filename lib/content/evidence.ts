@@ -24,6 +24,10 @@ export interface EvidenceItem {
   attribution?: string;
   /** Where the claim can be verified (real source). */
   source?: string;
+  /** Optional external URL that verifies the source. */
+  sourceUrl?: string;
+  /** Optional note on how to locate the record at the source (e.g. roll no.). */
+  sourceNote?: string;
 }
 
 export const evidence: EvidenceItem[] = [
@@ -39,6 +43,7 @@ export const evidence: EvidenceItem[] = [
     attribution: "Adrian Sarstedt · Co-Founder & CTO, Sphere",
     meta: ["Feb 2024", "~2 years"],
     source: "LinkedIn recommendation",
+    sourceUrl: "https://www.linkedin.com/in/dev-bilal-z/details/recommendations/",
   },
   {
     id: "rec-miguel",
@@ -52,6 +57,7 @@ export const evidence: EvidenceItem[] = [
     attribution: "Miguel Neto · Software Engineer, Investor & Entrepreneur",
     meta: ["Sept 2024", "Sphere"],
     source: "LinkedIn recommendation",
+    sourceUrl: "https://www.linkedin.com/in/dev-bilal-z/details/recommendations/",
   },
   {
     id: "deans-list",
@@ -60,8 +66,17 @@ export const evidence: EvidenceItem[] = [
     ext: "CERT",
     title: "Dean's List - 6 semesters",
     context:
-      "Recognized for academic standing across the 1st, 3rd, 4th, 5th, 7th, and 8th semesters at FAST-NUCES.",
-    meta: ["6 semesters", "FAST-NUCES"],
-    source: "LinkedIn",
+      "Recognized for academic standing across six semesters at FAST-NUCES, Lahore.",
+    meta: [
+      "Fall 2016",
+      "Fall 2017",
+      "Spring 2018",
+      "Fall 2018",
+      "Fall 2019",
+      "Spring 2020",
+    ],
+    source: "FAST-NUCES Dean's Lists",
+    sourceUrl: "https://www.nu.edu.pk/Campus/Lahore/DeanLists",
+    sourceNote: "roll no. 16L-4315",
   },
 ];

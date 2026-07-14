@@ -19,7 +19,7 @@ function resolveSiteUrl(): string {
     (process.env.VERCEL_PROJECT_PRODUCTION_URL &&
       `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
     (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    "https://bilalzahid.dev";
+    "https://bilalzahid.vercel.app";
   return fromEnv.replace(/\/+$/, "");
 }
 

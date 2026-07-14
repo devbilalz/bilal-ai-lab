@@ -8,7 +8,7 @@
  *   - Benchmark Mutation Suite - robustness evaluation
  * Plus two separate Turing projects run alongside it:
  *   - SWE Trajectory Evaluation - human ground-truth grading of agent trajectories
- *   - RLHF / SFT - model fine-tuning across Gemini, Grok, ServiceNow AI
+ *   - RLHF / SFT - model fine-tuning across Gemini, Claude, Grok, ServiceNow AI
  *
  * Every field is grounded in `Turing Projects Overview/` docs + the resume.
  * No invented metrics.
@@ -71,7 +71,7 @@ export const projects: Project[] = [
     label: "Generalized Agent APIs",
     role: "Agentic simulation environment",
     summary:
-      "A deterministic, resettable sandbox of ~77 simulated real-world services (Gmail, Slack, Salesforce, GitHub, …) with machine-verifiable function-call schemas and a 6-layer validation pipeline, so Gemini trains and is graded on multi-turn tool use without touching live data.",
+      "A deterministic, resettable sandbox of ~77 simulated real-world services (Gmail, Slack, Salesforce, GitHub, …) with machine-verifiable function-call schemas and a multi-stage validation pipeline, so Gemini trains and is graded on multi-turn tool use without touching live data.",
     stats: [
       { value: "77", label: "simulated real-world APIs" },
       { value: "3,200+", label: "automated tests" },

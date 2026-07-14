@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import {
   consumeDeepDiveOrigin,
   getPreviousPath,
+  pathLabel,
   type DeepDiveOrigin,
 } from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
@@ -23,9 +24,12 @@ const ORIGIN_TARGETS: Record<DeepDiveOrigin, Target> = {
 };
 
 /**
- * Resolve where "back" should go. An explicit origin recorded by the link that
- * was clicked wins (it can tell apart surfaces that share a URL, e.g. the chat
- * console vs Mission Control). Otherwise fall back to path history.
+ * Resolve where "back" should go, honoring the actual last page. An explicit
+ * origin recorded by the clicked link wins first, because it can tell apart
+ * surfaces that share the "/" URL (the chat console vs Mission Control vs the
+ * timeline). Otherwise we return to the exact previous in-app route (System
+ * Design, Case Files, another case file, the resume...). Only a direct/external
+ * landing with no history falls back to the Case Files index.
  */
 function resolveTarget(
   origin: DeepDiveOrigin | null,
@@ -33,13 +37,15 @@ function resolveTarget(
   slug: string,
 ): Target {
   if (origin) return ORIGIN_TARGETS[origin];
-  if (prev && prev.startsWith("/deep-dives")) {
-    return { href: "/deep-dives", label: "Case Files" };
-  }
-  if (prev === "/") {
-    return CAREER_SLUGS.includes(slug)
-      ? { href: "/#timeline", label: "Trajectory" }
-      : { href: "/#mission-control", label: "Under the Hood" };
+  if (prev) {
+    // The home page has multiple surfaces behind one URL; pick the likely one.
+    if (prev === "/") {
+      return CAREER_SLUGS.includes(slug)
+        ? { href: "/#timeline", label: "Trajectory" }
+        : { href: "/#mission-control", label: "Under the Hood" };
+    }
+    // Any other dedicated route: go back to exactly where they were.
+    return { href: prev, label: pathLabel(prev) };
   }
   // No in-app history (direct/external) => the index.
   return { href: "/deep-dives", label: "Case Files" };

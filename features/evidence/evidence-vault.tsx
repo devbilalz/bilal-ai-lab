@@ -138,7 +138,22 @@ function FileRow({ item, last }: { item: EvidenceItem; last: boolean }) {
           ))}
           {item.source && (
             <span className="font-mono text-[0.62rem] text-subtle">
-              · source: {item.source}
+              · source:{" "}
+              {item.sourceUrl ? (
+                <a
+                  href={item.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted underline decoration-dotted underline-offset-2 transition-colors hover:text-accent"
+                >
+                  {item.source}
+                </a>
+              ) : (
+                item.source
+              )}
+              {item.sourceNote && (
+                <span className="text-subtle"> ({item.sourceNote})</span>
+              )}
             </span>
           )}
         </div>

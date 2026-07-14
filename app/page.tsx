@@ -16,7 +16,7 @@ import { BeyondTheCode } from "@/features/beyond/beyond";
  * Contact lives in the footer. Case Files / System Design / Resources live on
  * dedicated routes.
  *
- * `xl:pr-40` on each section leaves a right gutter so the fixed section rail
+ * `GUTTER` leaves a right gutter on each section so the fixed section rail
  * (shown at xl+) never overlaps content.
  */
 const GUTTER = "xl:pr-20";

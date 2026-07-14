@@ -3,6 +3,8 @@ import Link from "next/link";
 import { SectionShell } from "@/components/layout/section-shell";
 import { BackHome } from "@/components/layout/back-home";
 import { Reveal } from "@/components/animations/reveal";
+import { ArchitectureDiagram } from "@/features/deep-dive/architecture-diagram";
+import type { Diagram } from "@/lib/content/diagrams";
 
 export const metadata: Metadata = {
   title: "System Design",
@@ -16,9 +18,42 @@ interface DesignSection {
   points: string[];
   examples?: string[];
   pull: string;
+  /** The case file that demonstrates this principle in a real system. */
+  proof?: { label: string; href: string };
+  /** An animated flow showing how the principle is applied in practice. */
+  diagram?: Diagram;
 }
 
 const sections: DesignSection[] = [
+  {
+    title: "AI infrastructure",
+    lead: "AI systems fail quietly when the surrounding infrastructure is vague. My bias is to make the environment measurable before judging the model - validate the contracts, control the world, and turn every evaluation into signal the training loop can use.",
+    points: [
+      "Validate tool contracts before training, so a broken schema never becomes learned model behavior.",
+      "Simulate live systems for safety, determinism, and reproducibility instead of testing against production APIs.",
+      "Generate synthetic worlds and their grading rubrics together, so the data is gradeable by construction.",
+      "Evaluate robustness under degraded conditions, and use disciplined human labels as ground truth for agent trajectories.",
+    ],
+    examples: [
+      "Multi-stage schema validation",
+      "Deterministic tool-use sandbox",
+      "World + rubric generation",
+      "Robustness stress-testing",
+    ],
+    pull: "AI systems fail quietly when the surrounding infrastructure is vague, so I make the environment measurable before I judge the model.",
+    proof: { label: "Benchmark Mutation Suite", href: "/deep-dives/benchmark-suite" },
+    diagram: {
+      steps: [
+        { label: "Validate tool contracts", sub: "before training" },
+        { label: "Simulate the world", sub: "deterministic + safe" },
+        { label: "Generate world + rubric", sub: "gradeable by construction" },
+        { label: "Evaluate robustness", sub: "under degraded conditions" },
+        { label: "Turn failures into signal", sub: "human labels as ground truth" },
+      ],
+      loop: "Every evaluation feeds the next training round instead of dying in a report.",
+      caption: "Make the environment measurable before judging the model.",
+    },
+  },
   {
     title: "API design",
     lead: "An API is a contract before it is code. I design the promise first - typed payloads, explicit versions, and idempotent behavior - because every other system builds its life around that contract, and for AI systems the contract is what the model actually learns.",
@@ -34,6 +69,21 @@ const sections: DesignSection[] = [
       "Stripe / QuickBooks / HMRC webhooks",
     ],
     pull: "An API is not a route. It's a promise other systems build their lives around.",
+    proof: { label: "Generalized Agent APIs", href: "/deep-dives/agent-apis" },
+    diagram: {
+      steps: [
+        { label: "Implementation code", sub: "the real behavior" },
+        { label: "Auto-generated schema", sub: "can't drift from the code" },
+        { label: "Typed, versioned contract", sub: "fails loudly, idempotent" },
+      ],
+      inject: "Retried webhooks (Stripe / QuickBooks / HMRC) never double-charge or double-file.",
+      outputs: [
+        { label: "Model", sub: "learns the contract" },
+        { label: "Frontend" },
+        { label: "Other services" },
+      ],
+      caption: "Design the promise first; every caller builds its life around it.",
+    },
   },
   {
     title: "Database design",
@@ -47,9 +97,19 @@ const sections: DesignSection[] = [
     examples: [
       "Jurisdiction handler pattern",
       "HIPAA-scoped matching data",
-      "Schema-exact world projection",
+      "Schema-exact synthetic data",
     ],
     pull: "The schema is where vague product language becomes reality.",
+    proof: { label: "Synthetic World Engine", href: "/deep-dives/dbgen" },
+    diagram: {
+      steps: [
+        { label: "Domain truth", sub: "vague product language" },
+        { label: "Schema models it", sub: "source of reality, not an ORM afterthought" },
+        { label: "Boundaries by privacy + change-rate", sub: "volatile domains as handlers" },
+        { label: "The rest builds on the shape", sub: "what the system can + can't do" },
+      ],
+      caption: "Tax jurisdictions become handlers, so adding one doesn't rewrite the engine.",
+    },
   },
   {
     title: "Async & workers",
@@ -67,23 +127,19 @@ const sections: DesignSection[] = [
       "FastAPI BackgroundTasks",
     ],
     pull: "If a user has to wait for your integration to think, the architecture is leaking.",
-  },
-  {
-    title: "AI infrastructure",
-    lead: "AI systems fail quietly when the surrounding infrastructure is vague. My bias is to make the environment measurable before judging the model - validate the contracts, control the world, and turn every evaluation into signal the training loop can use.",
-    points: [
-      "Validate tool contracts before training, so a broken schema never becomes learned model behavior.",
-      "Simulate live systems for safety, determinism, and reproducibility instead of testing against production APIs.",
-      "Generate synthetic worlds and their grading rubrics together, so the data is gradeable by construction.",
-      "Evaluate robustness under degraded conditions, and use disciplined human labels as ground truth for agent trajectories.",
-    ],
-    examples: [
-      "6-layer schema validation",
-      "Deterministic tool-use gym",
-      "World + rubric generation",
-      "Robustness mutation harness",
-    ],
-    pull: "AI systems fail quietly when the surrounding infrastructure is vague, so I make the environment measurable before I judge the model.",
+    proof: { label: "Sphere", href: "/deep-dives/sphere" },
+    diagram: {
+      steps: [
+        { label: "Request arrives", sub: "user is waiting" },
+        { label: "Enqueue long work", sub: "filings, syncs, backfills, generation" },
+        { label: "Return fast", sub: "no waiting on integrations to think" },
+      ],
+      outputs: [
+        { label: "Durable queue → worker", sub: "scaled independently" },
+        { label: "Object storage", sub: "artifacts skip app servers" },
+      ],
+      caption: "Long-running work belongs off the request path - with the simplest tool that's durable enough.",
+    },
   },
   {
     title: "Scaling & reliability",
@@ -96,10 +152,21 @@ const sections: DesignSection[] = [
     ],
     examples: [
       "Independent worker scaling",
-      "Per-record provenance",
-      "Sim2real parity checks",
+      "End-to-end traceability",
+      "Simulation-vs-real parity",
     ],
     pull: "Scaling is not only more traffic. Sometimes it's more jurisdictions, more tools, more edge cases, and more ways to be wrong.",
+    proof: { label: "SWE Trajectory Evaluation", href: "/deep-dives/swe-evaluation" },
+    diagram: {
+      steps: [
+        { label: "Name the failure modes", sub: "what can lie, retry, die, mis-grade" },
+        { label: "Bound each one", sub: "design by failure mode" },
+        { label: "Keep provenance + logs", sub: "wherever output must be trusted" },
+        { label: "Trace any result to source", sub: "explainable = trustworthy" },
+      ],
+      inject: "Scale workers independently from APIs; avoid public claims you can't defend.",
+      caption: "A system I can't explain is a system I can't trust.",
+    },
   },
 ];
 
@@ -149,6 +216,12 @@ export default function SystemDesignPage() {
                 ))}
               </ul>
 
+              {s.diagram && (
+                <div className="mt-6">
+                  <ArchitectureDiagram diagram={s.diagram} />
+                </div>
+              )}
+
               {s.examples && (
                 <div className="mt-5 flex flex-wrap gap-2">
                   {s.examples.map((e) => (
@@ -165,6 +238,17 @@ export default function SystemDesignPage() {
               <blockquote className="mt-6 border-l-2 border-accent pl-4 text-base italic text-foreground">
                 {s.pull}
               </blockquote>
+
+              {s.proof && (
+                <Link
+                  href={s.proof.href}
+                  className="mt-5 inline-flex items-center gap-1.5 font-mono text-xs text-subtle transition-colors hover:text-accent"
+                >
+                  <span className="text-accent">proof:</span>
+                  {s.proof.label}
+                  <span aria-hidden>&rarr;</span>
+                </Link>
+              )}
             </div>
           </Reveal>
         ))}
