@@ -23,7 +23,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const dd = deepDiveBySlug(slug);
   if (!dd) return { title: "Case File" };
-  return { title: `${dd.title} - Case File`, description: dd.tagline };
+  const title = `${dd.title} - Case File`;
+  const url = `${site.url}/deep-dives/${dd.slug}`;
+  return {
+    title,
+    description: dd.tagline,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title,
+      description: dd.tagline,
+      url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: dd.tagline,
+    },
+  };
 }
 
 function statusColor(status: string) {
