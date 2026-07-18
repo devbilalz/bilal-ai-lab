@@ -30,6 +30,12 @@ export interface Project {
   /** For horizon items: the shipped case file that proves related depth. */
   relatedSlug?: string;
   relatedLabel?: string;
+  telemetry?: {
+    input: string;
+    system: string;
+    eval: string;
+    proof: string;
+  };
 }
 
 /** The umbrella program. */
@@ -62,6 +68,12 @@ export const projects: Project[] = [
     status: "hardening",
     deepDive: true,
     inGym: true,
+    telemetry: {
+      input: "scenario brief",
+      system: "synthetic world",
+      eval: "schema validation",
+      proof: "case file",
+    },
   },
   {
     slug: "agent-apis",
@@ -77,6 +89,12 @@ export const projects: Project[] = [
     status: "shipped",
     deepDive: true,
     inGym: true,
+    telemetry: {
+      input: "tool call",
+      system: "API sandbox",
+      eval: "3,200+ tests",
+      proof: "case file",
+    },
   },
   {
     slug: "benchmark-suite",
@@ -92,6 +110,12 @@ export const projects: Project[] = [
     status: "ongoing",
     deepDive: true,
     inGym: true,
+    telemetry: {
+      input: "benchmark task",
+      system: "mutation harness",
+      eval: "16 degradations",
+      proof: "case file",
+    },
   },
   {
     slug: "swe-evaluation",
@@ -105,6 +129,12 @@ export const projects: Project[] = [
     ],
     status: "ongoing",
     deepDive: true,
+    telemetry: {
+      input: "agent trace",
+      system: "human referee",
+      eval: "15 quality tags",
+      proof: "case file",
+    },
   },
   {
     slug: "rlhf-sft",
@@ -119,6 +149,12 @@ export const projects: Project[] = [
     ],
     status: "ongoing",
     deepDive: true,
+    telemetry: {
+      input: "curated data",
+      system: "fine-tuning loop",
+      eval: "+18% accuracy",
+      proof: "case file",
+    },
   },
 ];
 

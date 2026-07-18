@@ -180,11 +180,14 @@ export function SectionRail() {
                     }
               }
             >
-              <Link
-                href={`/#${s.id}`}
-                onClick={(e) => scrollToSection(e, s.id)}
-                aria-current={isActive ? "true" : undefined}
-                className={cn(
+            <Link
+              href={`/#${s.id}`}
+              onClick={(e) => scrollToSection(e, s.id)}
+              aria-current={isActive ? "true" : undefined}
+              data-orbit-zone="section-rail"
+              data-orbit-hint={`jump to ${s.label.toLowerCase()}`}
+              data-orbit-place="right"
+              className={cn(
                   "block whitespace-nowrap rounded-full px-2 py-1 text-right text-xs transition-colors duration-300 hover:bg-surface/70 hover:text-foreground",
                   isActive
                     ? "font-medium text-accent [text-shadow:0_0_12px_var(--accent-glow)]"

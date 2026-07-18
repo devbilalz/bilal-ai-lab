@@ -177,6 +177,9 @@ export default function SystemDesignPage() {
       eyebrow="System Design"
       title="How I approach system design"
       className="pt-28"
+      orbitZone="system-design"
+      orbitHint="how I design systems"
+      orbitPlace="right"
       back={<BackHome />}
     >
       <Reveal>
@@ -242,6 +245,9 @@ export default function SystemDesignPage() {
               {s.proof && (
                 <Link
                   href={s.proof.href}
+                  data-orbit-zone="system-design-proof"
+                  data-orbit-hint={`proof · ${s.proof.label}`}
+                  data-orbit-place="auto"
                   className="mt-5 inline-flex items-center gap-1.5 font-mono text-xs text-subtle transition-colors hover:text-accent"
                 >
                   <span className="text-accent">proof:</span>

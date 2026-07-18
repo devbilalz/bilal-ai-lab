@@ -17,6 +17,9 @@ export default function ResourcesPage() {
       eyebrow="Résumé"
       title="Read the one-page story, or take the PDF"
       className="pt-28"
+      orbitZone="resources"
+      orbitHint="grab the résumé"
+      orbitPlace="right"
       back={<BackHome />}
     >
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -25,6 +28,9 @@ export default function ResourcesPage() {
           download
           data-analytics-label="Download resume PDF"
           data-analytics-location="resources_primary_actions"
+          data-orbit-zone="resource-download"
+          data-orbit-hint="take the PDF"
+          data-orbit-place="right"
           className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-accent-contrast shadow-[0_0_28px_var(--accent-glow)] transition-opacity hover:opacity-90"
         >
           <Download className="size-4" />
@@ -36,6 +42,9 @@ export default function ResourcesPage() {
           rel="noopener noreferrer"
           data-analytics-label="Open resume PDF"
           data-analytics-location="resources_primary_actions"
+          data-orbit-zone="resource-open"
+          data-orbit-hint="open in a tab"
+          data-orbit-place="right"
           className="inline-flex items-center gap-2 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:text-foreground"
         >
           <ExternalLink className="size-4" />

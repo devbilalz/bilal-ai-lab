@@ -3,6 +3,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { MousePointerClick } from "lucide-react";
 import { motion } from "motion/react";
+import { useThemeRuntime } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/lib/content/projects";
 
@@ -22,23 +23,43 @@ const HORIZON = "#22d3ee";
  * "ping" ring (staggered per node) so it's obvious the modules are clickable.
  */
 export function ProjectNode({ data, selected }: NodeProps) {
+  const { resolvedTheme } = useThemeRuntime();
   const project = data.project as Project;
   const dimmed = data.dimmed as boolean;
   const ping = data.ping as boolean;
   const pingDelay = (data.pingDelay as number | undefined) ?? 0;
   const horizon = Boolean(project.horizon);
   const dot = horizon ? HORIZON : statusColor[project.status];
+  const dark = resolvedTheme === "dark";
+  const strongText = dark ? "#f6f6ff" : "#172030";
+  const mutedText = dark ? "#cfd2e6" : "#435063";
+  const subtleText = dark ? "#a9abc0" : "#69758a";
 
   return (
     <div
+      data-orbit-zone="mission-control"
+      data-orbit-hint={horizon ? "future track" : "trace this module"}
+      data-orbit-place="center"
       className={cn(
-        "group relative w-52 cursor-pointer rounded-lg border bg-surface/90 px-4 py-3 text-left backdrop-blur transition-all hover:-translate-y-0.5",
+        "mission-node group relative w-52 cursor-pointer rounded-lg border px-4 py-3 text-left backdrop-blur transition-all hover:-translate-y-0.5",
         horizon && "border-dashed",
         selected
           ? "border-accent shadow-[0_0_28px_var(--accent-glow)]"
           : "border-border-strong hover:border-accent/70 hover:shadow-[0_0_20px_var(--accent-glow)]",
-        dimmed && "opacity-40",
+        dimmed && "opacity-60 hover:opacity-100",
       )}
+      style={{
+        background: dark
+          ? selected
+            ? "rgba(24, 24, 38, 0.98)"
+            : "rgba(16, 16, 25, 0.95)"
+          : "rgba(255, 246, 229, 0.92)",
+        boxShadow: dark
+          ? selected
+            ? "0 0 0 1px rgba(124,92,255,0.5), 0 18px 42px rgba(0,0,0,0.55), 0 0 32px rgba(124,92,255,0.28)"
+            : "0 12px 30px rgba(0, 0, 0, 0.38)"
+          : "0 12px 28px rgba(60, 50, 35, 0.14)",
+      }}
     >
       {/* interactivity beacon: subtle staggered pulse on every module */}
       {ping && (
@@ -63,7 +84,7 @@ export function ProjectNode({ data, selected }: NodeProps) {
       />
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-[0.6rem] uppercase tracking-widest">
-          <span className="text-subtle group-hover:hidden">
+          <span className="group-hover:hidden" style={{ color: subtleText }}>
             {horizon ? "focus" : project.deepDive ? "case file →" : "module"}
           </span>
           <span
@@ -87,10 +108,12 @@ export function ProjectNode({ data, selected }: NodeProps) {
           />
         </span>
       </div>
-      <p className="mt-1.5 text-sm font-semibold text-foreground">
+      <p className="mt-1.5 text-sm font-semibold" style={{ color: strongText }}>
         {project.label}
       </p>
-      <p className="mt-0.5 text-xs text-muted">{project.role}</p>
+      <p className="mt-0.5 text-xs" style={{ color: mutedText }}>
+        {project.role}
+      </p>
       <Handle
         type="source"
         position={Position.Right}

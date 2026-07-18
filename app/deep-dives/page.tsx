@@ -44,6 +44,9 @@ export default function DeepDivesPage() {
       eyebrow="Case Files"
       title="How I designed these systems"
       className="pt-28"
+      orbitZone="deep-dives"
+      orbitHint="browse the case files"
+      orbitPlace="right"
       back={<BackHome />}
     >
       <div className="space-y-12">
@@ -64,6 +67,9 @@ export default function DeepDivesPage() {
                   <Reveal key={d.slug} delay={i * 0.05}>
                     <Link
                       href={`/deep-dives/${d.slug}`}
+                      data-orbit-zone="deep-dive-card"
+                      data-orbit-hint={`open · ${d.title}`}
+                      data-orbit-place="auto"
                       className="flex h-full flex-col rounded-xl border border-border bg-surface/40 p-6 transition-colors hover:border-accent"
                     >
                       <h3 className="text-lg font-semibold text-foreground">

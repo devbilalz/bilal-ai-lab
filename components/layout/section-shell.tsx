@@ -9,18 +9,27 @@ export function SectionShell({
   children,
   className,
   back,
+  orbitZone,
+  orbitHint,
+  orbitPlace,
 }: {
   id: string;
   eyebrow?: string;
   title?: string;
   children: ReactNode;
   className?: string;
+  orbitZone?: string;
+  orbitHint?: string;
+  orbitPlace?: "left" | "right" | "auto";
   /** Optional control (e.g. BackHome) rendered above the eyebrow. */
   back?: ReactNode;
 }) {
   return (
     <section
       id={id}
+      data-orbit-zone={orbitZone}
+      data-orbit-hint={orbitHint}
+      data-orbit-place={orbitPlace}
       className={cn(
         "mx-auto w-full max-w-6xl scroll-mt-16 px-6 pt-6 pb-20 sm:pt-8 sm:pb-28",
         className,

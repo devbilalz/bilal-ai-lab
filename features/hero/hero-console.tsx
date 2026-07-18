@@ -18,7 +18,9 @@ import { isBootDone, onBootDone } from "@/lib/hero-intro";
 import { setDeepDiveOrigin } from "@/lib/nav-history";
 
 /** Plays once per full load; stays quiet on in-app returns to home. */
-let heroPlayedThisLoad = false;
+const heroRuntime = {
+  playedThisLoad: false,
+};
 
 /**
  * In-memory chat session. Module scope survives client-side route changes, so
@@ -288,12 +290,18 @@ function AssistantAnswer({
   reveal: boolean;
   instant: boolean;
 }) {
-  let cursor = 0;
-  const at = (words: number) => {
-    const start = cursor;
-    cursor += 0.15 + words * 0.02;
-    return start;
-  };
+  const blockWordCounts = answer.blocks.map(blockWords);
+  const blockDelays = blockWordCounts.map((_, index) =>
+    blockWordCounts
+      .slice(0, index)
+      .reduce((sum, words) => sum + 0.15 + words * 0.02, 0),
+  );
+  const afterBlocks = blockWordCounts.reduce(
+    (sum, words) => sum + 0.15 + words * 0.02,
+    0,
+  );
+  const chipDelay = afterBlocks;
+  const ctaDelay = afterBlocks + (answer.chips?.length ? 0.15 + answer.chips.length * 0.02 : 0);
 
   return (
     <motion.div
@@ -315,13 +323,13 @@ function AssistantAnswer({
         >
           <div className="space-y-3 rounded-2xl rounded-tl-sm border border-border bg-surface/55 p-4 backdrop-blur sm:p-5">
             {answer.blocks.map((b, i) => (
-              <Block key={i} block={b} delay={at(blockWords(b))} />
+              <Block key={i} block={b} delay={blockDelays[i] ?? 0} />
             ))}
           </div>
 
           {answer.chips?.length ? (
             <motion.div
-              variants={cluster(at(answer.chips.length), 0.05)}
+              variants={cluster(chipDelay, 0.05)}
               className="grid grid-cols-2 gap-2 sm:grid-cols-3"
             >
               {answer.chips.map((c) => (
@@ -337,7 +345,7 @@ function AssistantAnswer({
           ) : null}
 
           {answer.ctas?.length ? (
-            <motion.div variants={fade(at(2))} className="flex flex-wrap gap-2 pt-1">
+            <motion.div variants={fade(ctaDelay)} className="flex flex-wrap gap-2 pt-1">
               {answer.ctas.map((c, i) => (
                 <Link
                   key={c.href + c.label}
@@ -384,30 +392,24 @@ export function HeroConsole() {
   const reduced = usePrefersReducedMotion();
   const coreModel = heroModels[0];
 
-  // Seed once: resume a persisted session if present; otherwise start fresh
-  // (auto-play intro) or, on reduced-motion / in-app returns, park the next
-  // question at "ready" with the intro answer already in the transcript.
-  const initRef = useRef<{ seed: HeroSession; autoSend: boolean } | null>(null);
-  if (initRef.current === null) {
+  const [initial] = useState(() => {
     const restored = heroSession ? normalizeSession(heroSession) : null;
     if (restored) {
-      initRef.current = { seed: restored, autoSend: false };
-    } else {
-      const preplayed = reduced || heroPlayedThisLoad;
-      const history: Turn[] = preplayed
-        ? [turnOf(coreModel.id, coreModel.name, introItem(coreModel))]
-        : [];
-      const current = preplayed
-        ? nextUnasked(coreModel.id, history)
-        : introItem(coreModel);
-      const phase: Phase = preplayed ? (current ? "ready" : "end") : "idle";
-      initRef.current = {
-        seed: { modelId: coreModel.id, history, current, phase },
-        autoSend: !preplayed,
-      };
+      return { seed: restored, autoSend: false };
     }
-  }
-  const seed = initRef.current.seed;
+
+    const preplayed = reduced || heroRuntime.playedThisLoad;
+    const history: Turn[] = preplayed
+      ? [turnOf(coreModel.id, coreModel.name, introItem(coreModel))]
+      : [];
+    const current = preplayed ? nextUnasked(coreModel.id, history) : introItem(coreModel);
+    const phase: Phase = preplayed ? (current ? "ready" : "end") : "idle";
+    return {
+      seed: { modelId: coreModel.id, history, current, phase },
+      autoSend: !preplayed,
+    };
+  });
+  const seed = initial.seed;
 
   const [modelId, setModelId] = useState(seed.modelId);
   const [history, setHistory] = useState<Turn[]>(seed.history);
@@ -419,7 +421,7 @@ export function HeroConsole() {
   const scrollRef = useRef<HTMLDivElement>(null);
   // Only the very first question on a fresh load auto-sends (the signature
   // intro). Everything after that waits for the visitor to press Enter.
-  const autoSendRef = useRef(initRef.current.autoSend);
+  const autoSendRef = useRef(initial.autoSend);
 
   const model = heroModels.find((m) => m.id === modelId) ?? coreModel;
   const busy = phase === "typing" || phase === "thinking" || phase === "answering";
@@ -477,7 +479,7 @@ export function HeroConsole() {
     if (phase !== "answering" || !current) return;
     const dur = reduced ? 400 : estimateAnswerMs(current.answer);
     const t = setTimeout(() => {
-      heroPlayedThisLoad = true;
+      heroRuntime.playedThisLoad = true;
       const committed = [...history, turnOf(modelId, model.name, current)];
       setHistory(committed);
       const nxt = nextUnasked(modelId, committed);
@@ -561,7 +563,6 @@ export function HeroConsole() {
     if (phase === "answering" && current) {
       base = [...history, turnOf(modelId, model.name, current)];
       setHistory(base);
-      heroPlayedThisLoad = true;
     }
     setModelId(id);
     const nxt = nextUnasked(id, base);
@@ -576,7 +577,7 @@ export function HeroConsole() {
   }
 
   return (
-    <div className="relative z-10 flex h-[82vh] max-h-[820px] min-h-[540px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated/40 backdrop-blur">
+    <div className="relative z-10 flex h-[calc(100dvh-7.5rem)] max-h-[820px] min-h-[440px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated/40 backdrop-blur sm:h-[82vh] sm:min-h-[540px]">
       {/* Transcript */}
       <div
         ref={scrollRef}
@@ -661,7 +662,12 @@ export function HeroConsole() {
 
       {/* Input bar (bottom) - model selector lives here */}
       <div className="border-t border-border bg-surface/40 p-3 backdrop-blur sm:p-3.5">
-        <div className="flex items-center gap-2 rounded-2xl border border-border-strong bg-background-elevated/70 px-3 py-2">
+        <div
+          className="flex items-center gap-2 rounded-2xl border border-border-strong bg-background-elevated/70 px-3 py-2"
+          data-orbit-zone="hero-input"
+          data-orbit-hint="auto-typed prompt"
+          data-orbit-place="top"
+        >
           <Plus className="size-4 shrink-0 text-subtle" />
 
           <div className="min-w-0 flex-1 truncate font-mono text-sm">
@@ -694,6 +700,9 @@ export function HeroConsole() {
               onClick={() => setMenuOpen((o) => !o)}
               aria-haspopup="listbox"
               aria-expanded={menuOpen}
+              data-orbit-zone="model-select"
+              data-orbit-hint="switch the lens"
+              data-orbit-place="top"
               className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-xs text-foreground transition-colors hover:bg-surface"
             >
               <span
@@ -767,6 +776,9 @@ export function HeroConsole() {
               disabled={!canSend}
               onClick={submit}
               aria-label={canSend ? "Send question" : "Waiting"}
+              data-orbit-zone="hero-send"
+              data-orbit-hint={canSend ? "hit enter" : "let it finish"}
+              data-orbit-place="top"
               className={cn(
                 "relative grid size-8 place-items-center rounded-full transition",
                 canSend

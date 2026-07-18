@@ -78,7 +78,7 @@ export const diagrams: Record<string, Diagram> = {
   "rlhf-sft": {
     steps: [
       { label: "Code-centric examples", sub: "sourced + filtered" },
-      { label: "Shape to real prompts", sub: "inference-fidelity, not lab format" },
+      { label: "Shape to real prompts", sub: "inference-fidelity, not sanitized format" },
       { label: "Rubric-aligned labeling", sub: "review loops align reviewers" },
       { label: "Training-ready dataset", sub: "per model family" },
       { label: "Model-eval feedback", sub: "targets real failure modes" },

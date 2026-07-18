@@ -24,6 +24,7 @@ import {
 } from "@/lib/content/projects";
 import { setDeepDiveOrigin } from "@/lib/nav-history";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useThemeRuntime } from "@/components/providers/theme-provider";
 import { ProjectNode } from "./project-node";
 import { GymGroupNode } from "./gym-group-node";
 import { FocusGroupNode } from "./focus-group-node";
@@ -67,6 +68,7 @@ function MapCanvas({
   edges,
   height,
   onSelect,
+  onHover,
   onClear,
   ariaLabel,
 }: {
@@ -74,44 +76,62 @@ function MapCanvas({
   edges: Edge[];
   height: number;
   onSelect: (id: string) => void;
+  onHover?: (id: string | null) => void;
   onClear: () => void;
   ariaLabel: string;
 }) {
+  const { resolvedTheme } = useThemeRuntime();
+  const dark = resolvedTheme === "dark";
+
   return (
-    <div
-      aria-label={ariaLabel}
-      className="relative overflow-hidden rounded-xl border border-border bg-background-elevated"
-      style={{ height }}
-    >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodeClick={(_, node) => {
-          if (node.type !== "project") return; // group containers aren't selectable
-          onSelect(node.id);
+    <div className="-mx-6 overflow-x-auto px-6 pb-2 lg:mx-0 lg:px-0">
+      <div
+        aria-label={ariaLabel}
+        className="mission-flow relative min-w-[900px] overflow-hidden rounded-xl border border-border lg:min-w-0"
+        style={{
+          height,
+          background: dark ? "rgba(10, 10, 18, 0.88)" : "rgba(255, 250, 239, 0.82)",
         }}
-        onPaneClick={onClear}
-        fitView
-        fitViewOptions={{ padding: 0.06 }}
-        minZoom={0.2}
-        maxZoom={1.75}
-        proOptions={{ hideAttribution: true }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        edgesFocusable={false}
-        zoomOnScroll={false}
-        panOnScroll={false}
-        preventScrolling={false}
-        panOnDrag
-        zoomOnDoubleClick
       >
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="var(--border)" />
-        <Controls
-          showInteractive={false}
-          className="!border-border !bg-background-elevated [&_button]:!border-border [&_button]:!bg-surface [&_button]:!fill-muted"
-        />
-      </ReactFlow>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodeClick={(_, node) => {
+            if (node.type !== "project") return; // group containers aren't selectable
+            onSelect(node.id);
+          }}
+          onNodeMouseEnter={(_, node) => {
+            if (node.type === "project") onHover?.(node.id);
+          }}
+          onNodeMouseLeave={() => onHover?.(null)}
+          onPaneClick={onClear}
+          fitView
+          fitViewOptions={{ padding: 0.06 }}
+          minZoom={0.2}
+          maxZoom={1.75}
+          proOptions={{ hideAttribution: true }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          edgesFocusable={false}
+          zoomOnScroll={false}
+          panOnScroll={false}
+          preventScrolling={false}
+          panOnDrag
+          zoomOnDoubleClick
+        >
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={22}
+            size={1}
+            color={dark ? "rgba(255,255,255,0.13)" : "rgba(27,36,48,0.18)"}
+          />
+          <Controls
+            showInteractive={false}
+            className="mission-flow-controls !border-border"
+          />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
@@ -213,6 +233,22 @@ function DetailPanel({
                 </dl>
               )}
 
+              {active.telemetry && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {Object.entries(active.telemetry).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="rounded-lg border border-border bg-background-elevated/70 px-3 py-2"
+                    >
+                      <p className="font-mono text-[0.58rem] uppercase tracking-widest text-subtle">
+                        {key}
+                      </p>
+                      <p className="mt-1 text-xs font-medium text-foreground">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {active.horizon && active.focusStatus && (
                 <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#22d3ee]/40 bg-[#22d3ee]/[0.08] px-3 py-1 font-mono text-[0.62rem] uppercase tracking-widest text-[#67e8f9]">
                   <span className="inline-block size-1.5 rounded-full bg-[#22d3ee] shadow-[0_0_8px_#22d3ee]" />
@@ -271,7 +307,10 @@ function DetailPanel({
 
 function PipelineBoard() {
   const reduced = usePrefersReducedMotion();
+  const { resolvedTheme } = useThemeRuntime();
+  const dark = resolvedTheme === "dark";
   const [selected, setSelected] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const nodes: Node[] = useMemo(() => {
@@ -310,8 +349,9 @@ function PipelineBoard() {
   const edges: Edge[] = useMemo(
     () =>
       projectEdges.map((e) => {
+        const activeId = selected ?? hovered;
         const on =
-          selected !== null && (e.from === selected || e.to === selected);
+          activeId !== null && (e.from === activeId || e.to === activeId);
         return {
           id: `${e.from}-${e.to}`,
           source: e.from,
@@ -321,16 +361,20 @@ function PipelineBoard() {
           labelShowBg: true,
           labelBgPadding: [4, 2] as [number, number],
           labelBgBorderRadius: 4,
-          labelStyle: { fill: "var(--fg-muted)", fontSize: 10 },
-          labelBgStyle: { fill: "var(--bg-elevated)" },
+          labelStyle: {
+            fill: dark ? "#e7e7f2" : "#435063",
+            fontSize: 10,
+            fontWeight: 600,
+          },
+          labelBgStyle: { fill: dark ? "#171724" : "#fff6e5" },
           style: {
-            stroke: on ? "var(--accent)" : "var(--border-strong)",
+            stroke: on ? (dark ? "#8f7aff" : "#3858d6") : dark ? "rgba(255,255,255,0.22)" : "rgba(27,36,48,0.22)",
             strokeWidth: on ? 2 : 1.2,
-            opacity: hasInteracted && selected !== null && !on ? 0.2 : 1,
+            opacity: hasInteracted && activeId !== null && !on ? 0.34 : 1,
           },
         };
       }),
-    [selected, reduced, hasInteracted],
+    [selected, hovered, reduced, hasInteracted, dark],
   );
 
   const active = selected ? projectBySlug(selected) ?? null : null;
@@ -346,6 +390,7 @@ function PipelineBoard() {
           setHasInteracted(true);
           setSelected(id);
         }}
+        onHover={setHovered}
         onClear={() => {
           setHasInteracted(true);
           setSelected(null);
@@ -366,7 +411,10 @@ function PipelineBoard() {
 
 function FocusBoard() {
   const reduced = usePrefersReducedMotion();
+  const { resolvedTheme } = useThemeRuntime();
+  const dark = resolvedTheme === "dark";
   const [selected, setSelected] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const nodes: Node[] = useMemo(() => {
@@ -403,20 +451,21 @@ function FocusBoard() {
   // Non-directional dashed connectors: the three tracks are concurrent, not a
   // pipeline, so no arrowheads - just a shared rail that reads as "in parallel".
   const focusEdges: Edge[] = useMemo(() => {
+    const activeId = selected ?? hovered;
     const base = {
       type: "straight" as const,
-      animated: !reduced,
+        animated: !reduced,
       style: {
-        stroke: "#22d3ee",
-        strokeWidth: 1.4,
+        stroke: activeId ? (dark ? "#67e8f9" : "#0e7490") : "#22d3ee",
+        strokeWidth: activeId ? 1.9 : 1.4,
         strokeDasharray: "5 5",
-        opacity: 0.6,
+        opacity: activeId ? 0.9 : 0.6,
       },
       labelShowBg: true,
       labelBgPadding: [5, 2] as [number, number],
       labelBgBorderRadius: 4,
-      labelStyle: { fill: "#67e8f9", fontSize: 10 },
-      labelBgStyle: { fill: "var(--bg-elevated)" },
+      labelStyle: { fill: dark ? "#a5f3fc" : "#0e7490", fontSize: 10, fontWeight: 600 },
+      labelBgStyle: { fill: dark ? "#171724" : "#fff6e5" },
     };
     return [
       {
@@ -433,7 +482,7 @@ function FocusBoard() {
         ...base,
       },
     ];
-  }, [reduced]);
+  }, [selected, hovered, reduced, dark]);
 
   const active = selected ? projectBySlug(selected) ?? null : null;
 
@@ -448,6 +497,7 @@ function FocusBoard() {
           setHasInteracted(true);
           setSelected(id);
         }}
+        onHover={setHovered}
         onClear={() => {
           setHasInteracted(true);
           setSelected(null);
@@ -466,7 +516,15 @@ function FocusBoard() {
 
 export function MissionControl() {
   return (
-    <div className="space-y-4">
+    <div
+      className="space-y-4"
+      data-orbit-zone="mission-control"
+      data-orbit-hint="trace the system"
+      data-orbit-place="left"
+    >
+      <p className="font-mono text-[0.68rem] uppercase tracking-widest text-subtle">
+        Runtime Telemetry · traces, evals, proof
+      </p>
       <PipelineBoard />
       <FocusBoard />
     </div>

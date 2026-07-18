@@ -12,6 +12,7 @@ import { Starfield } from "@/components/background/starfield";
 import { SectionRail } from "@/components/layout/section-rail";
 import { RouteHistory } from "@/components/layout/route-history";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
+import { OrbitCompanion } from "@/components/runtime/orbit-companion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,8 +52,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#06060a",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#06060a" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f0e5" },
+  ],
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({
@@ -63,18 +67,22 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      data-theme-mode="night"
+      data-time-phase="night"
+      data-resolved-theme="dark"
+      className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
     >
       <body className="flex min-h-dvh flex-col text-foreground">
-        <Starfield />
         <PersonJsonLd />
         <ThemeProvider>
+          <Starfield />
           <LenisProvider>
             <RouteHistory />
             <Nav />
             <SectionRail />
             <div className="flex-1">{children}</div>
             <Footer />
+            <OrbitCompanion />
           </LenisProvider>
         </ThemeProvider>
         <Analytics />

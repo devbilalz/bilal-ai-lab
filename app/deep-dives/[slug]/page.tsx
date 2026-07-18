@@ -134,7 +134,13 @@ export default async function DeepDivePage({
   };
 
   return (
-    <SectionShell id={dd.slug} className="max-w-3xl pt-28">
+    <SectionShell
+      id={dd.slug}
+      className="max-w-3xl pt-28"
+      orbitZone="case-file"
+      orbitHint="inside a case file"
+      orbitPlace="right"
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -299,7 +305,13 @@ export default async function DeepDivePage({
         </Block>
 
         <div className="border-t border-border pt-8">
-          <Link href="/system-design" className="text-sm font-medium text-accent hover:underline">
+          <Link
+            href="/system-design"
+            data-orbit-zone="system-design"
+            data-orbit-hint="how I design systems"
+            data-orbit-place="right"
+            className="text-sm font-medium text-accent hover:underline"
+          >
             How I approach system design generally →
           </Link>
         </div>

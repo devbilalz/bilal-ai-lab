@@ -68,6 +68,9 @@ function SkillChip({
       type="button"
       onClick={onSelect}
       aria-pressed={isActive}
+      data-orbit-zone="skills"
+      data-orbit-hint="capability cluster"
+      data-orbit-place="right"
       initial="rest"
       animate="rest"
       whileHover={reduced ? undefined : "on"}

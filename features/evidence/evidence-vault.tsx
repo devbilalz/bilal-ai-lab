@@ -58,6 +58,9 @@ function FileRow({ item, last }: { item: EvidenceItem; last: boolean }) {
   return (
     <div
       style={{ "--tile": color } as CSSProperties}
+      data-orbit-zone="evidence"
+      data-orbit-hint="proof node"
+      data-orbit-place="left"
       className="group relative flex gap-3 p-4 transition-colors hover:bg-surface/50 sm:gap-4 sm:p-5"
     >
       {/* lit left edge on hover */}

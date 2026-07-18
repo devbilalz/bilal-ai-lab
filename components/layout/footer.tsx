@@ -71,7 +71,7 @@ const rows = [
 
 const links = [
   { label: "LinkedIn", href: site.links.linkedin, Icon: LinkedInIcon, color: "#4aa3ff" },
-  { label: "GitHub", href: site.links.github, Icon: GitHubIcon, color: "#f4f4f8" },
+  { label: "GitHub", href: site.links.github, Icon: GitHubIcon, color: "var(--fg)" },
   { label: "Résumé", href: "/resources", Icon: ResumeIcon, color: "#a78bfa" },
 ];
 
@@ -104,14 +104,41 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+function RuntimeBadge() {
+  return (
+    <div className="group relative overflow-hidden rounded-full border border-border-strong bg-background-elevated/50 px-4 py-2.5 shadow-[inset_0_0_20px_rgba(124,92,255,0.08)]">
+      <span
+        aria-hidden
+        className="absolute inset-y-1 left-2 w-px rounded-full bg-accent/60"
+      />
+      <span
+        aria-hidden
+        className="absolute left-4 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_var(--accent)]"
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-accent/12 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+      />
+      <span className="relative flex items-center gap-2 pl-4 font-mono text-[0.62rem] uppercase tracking-widest text-subtle">
+        <span className="text-accent">runtime</span>
+        <span className="h-px w-6 bg-border-strong" />
+        <span>systems built to scale</span>
+      </span>
+    </div>
+  );
+}
+
 export function Footer() {
   return (
     <footer
       id="contact"
+      data-orbit-zone="contact"
+      data-orbit-hint="channel open"
+      data-orbit-place="right"
       className="scroll-mt-16 border-t border-border bg-background"
     >
       <div className="mx-auto max-w-6xl px-6 py-14 xl:pr-20">
-        <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-start md:gap-16">
+        <div className="grid gap-10 md:grid-cols-[1fr_26rem] md:items-start md:gap-16">
           {/* Terminal contact console */}
           <div className="min-w-0">
             <p className="flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-widest text-online">
@@ -127,7 +154,7 @@ export function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 max-w-xl overflow-hidden rounded-xl border border-border bg-background-elevated/60 backdrop-blur"
+              className="mt-6 min-h-[11rem] max-w-xl overflow-hidden rounded-xl border border-border bg-background-elevated/60 backdrop-blur"
             >
               {/* window chrome */}
               <div className="flex items-center gap-2 border-b border-border bg-surface/50 px-4 py-2.5 font-mono text-[0.7rem]">
@@ -183,61 +210,76 @@ export function Footer() {
             </motion.div>
           </div>
 
-          {/* Heading + links */}
-          <div className="flex flex-col items-start gap-4 md:items-end md:text-right">
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Let&apos;s connect
-            </h2>
-            <div className="flex w-full flex-col items-start gap-2.5 md:items-end">
-              {links.map((r) => {
-                const Icon = r.Icon;
-                const cls =
-                  "group relative flex items-center gap-2.5 overflow-hidden rounded-full border border-border-strong px-5 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-[var(--c)] hover:shadow-[0_0_26px_-6px_var(--c)]";
-                const inner = (
-                  <>
-                    <Icon
-                      className="relative z-10 size-4 shrink-0"
-                      style={{ color: r.color }}
-                      strokeWidth={2}
-                    />
-                    <span className="relative z-10">{r.label}</span>
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"
-                      style={{
-                        backgroundImage:
-                          "linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 24%, transparent), transparent)",
-                      }}
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                      style={{
-                        background:
-                          "color-mix(in srgb, var(--c) 9%, transparent)",
-                      }}
-                    />
-                  </>
-                );
-                const style = { "--c": r.color } as CSSProperties;
-                return r.href.startsWith("/") ? (
-                  <Link key={r.label} href={r.href} className={cls} style={style}>
-                    {inner}
-                  </Link>
-                ) : (
-                  <a
-                    key={r.label}
-                    href={r.href}
-                    className={cls}
-                    style={style}
-                    {...(r.href.startsWith("http")
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                  >
-                    {inner}
-                  </a>
-                );
-              })}
+          <div className="flex min-w-0 flex-col items-start md:items-end md:text-right">
+            <p className="flex min-h-[1.05rem] items-center font-mono text-[0.68rem] uppercase tracking-widest text-accent">
+              Runtime Channels
+            </p>
+            <div className="mt-6 flex min-h-[11rem] w-full max-w-xl flex-col justify-center rounded-xl border border-border-strong bg-background-elevated/55 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.22)] backdrop-blur">
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                Let&apos;s connect
+              </h2>
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {links.map((r) => {
+                  const Icon = r.Icon;
+                  const cls =
+                    "group relative flex min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full border border-border-strong px-3 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-[var(--c)] hover:shadow-[0_0_26px_-6px_var(--c)]";
+                  const inner = (
+                    <>
+                      <Icon
+                        className="relative z-10 size-4 shrink-0"
+                        style={{ color: r.color }}
+                        strokeWidth={2}
+                      />
+                      <span className="relative z-10 truncate">{r.label}</span>
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-700 group-hover:translate-x-full"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 24%, transparent), transparent)",
+                        }}
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        style={{
+                          background:
+                            "color-mix(in srgb, var(--c) 9%, transparent)",
+                        }}
+                      />
+                    </>
+                  );
+                  const style = { "--c": r.color } as CSSProperties;
+                  return r.href.startsWith("/") ? (
+                    <Link
+                      key={r.label}
+                      href={r.href}
+                      className={cls}
+                      style={style}
+                      data-orbit-zone="footer-links"
+                      data-orbit-hint="open channel"
+                      data-orbit-place="left"
+                    >
+                      {inner}
+                    </Link>
+                  ) : (
+                    <a
+                      key={r.label}
+                      href={r.href}
+                      className={cls}
+                      style={style}
+                      data-orbit-zone="footer-links"
+                      data-orbit-hint="open channel"
+                      data-orbit-place="left"
+                      {...(r.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
+                      {inner}
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -247,11 +289,9 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-5 sm:flex-row xl:pr-20">
           <p className="font-mono text-xs text-subtle">
-            {site.person} · {new Date().getFullYear()}
+            © {site.person} · {new Date().getFullYear()}
           </p>
-          <p className="font-mono text-xs text-subtle">
-            Synthetic worlds · agentic evaluation · systems built to scale
-          </p>
+          <RuntimeBadge />
         </div>
       </div>
     </footer>

@@ -32,31 +32,82 @@ export default function Home() {
         eyebrow="Under the Hood"
         title="What I've built, and where it's headed"
         className={GUTTER}
+        orbitZone="mission-control"
+        orbitHint="trace the system"
+        orbitPlace="left"
       >
         <MissionControl />
       </SectionShell>
 
-      <SectionShell id="metrics" eyebrow="Metrics" title="The impact, in numbers" className={GUTTER}>
+      <SectionShell
+        id="metrics"
+        eyebrow="Metrics"
+        title="The impact, in numbers"
+        className={GUTTER}
+        orbitZone="metrics"
+        orbitHint="impact signal"
+        orbitPlace="right"
+      >
         <MetricsStrip />
       </SectionShell>
 
-      <SectionShell id="timeline" eyebrow="Trajectory" title="How I've grown" className={GUTTER}>
+      <SectionShell
+        id="timeline"
+        eyebrow="Trajectory"
+        title="How I've grown"
+        className={GUTTER}
+        orbitZone="timeline"
+        orbitHint="growth curve"
+        orbitPlace="left"
+      >
         <Timeline />
       </SectionShell>
 
-      <SectionShell id="skills" eyebrow="Expertise Map" title="Where I specialize" className={GUTTER}>
+      <SectionShell
+        id="skills"
+        eyebrow="Expertise Map"
+        title="Where I specialize"
+        className={GUTTER}
+        orbitZone="skills"
+        orbitHint="capability cluster"
+        orbitPlace="right"
+      >
         <SkillsMap />
       </SectionShell>
 
-      <SectionShell id="principles" eyebrow="Principles" title="How I think" className={GUTTER}>
+      <SectionShell
+        id="principles"
+        eyebrow="Principles"
+        title="How I think"
+        className={GUTTER}
+        orbitZone="principles"
+        orbitHint="decision rule"
+        orbitPlace="left"
+      >
         <Principles />
       </SectionShell>
 
-      <SectionShell id="beyond" eyebrow="Beyond the code" title="Off the clock" className={GUTTER}>
+      <SectionShell
+        id="beyond"
+        eyebrow="Beyond the code"
+        title="Off the clock"
+        className={GUTTER}
+        orbitZone="beyond"
+        orbitHint="human signal"
+        orbitPlace="right"
+      >
         <BeyondTheCode />
       </SectionShell>
 
-      <SectionShell id="evidence" eyebrow="Feedback & Honors" title="What others say" className={GUTTER}>
+      <SectionShell
+        id="evidence"
+        eyebrow="Feedback & Honors"
+        title="What others say"
+        className={GUTTER}
+        orbitZone="evidence"
+        orbitHint="proof beats claims"
+        orbitPlace="left"
+      >
         <EvidenceVault />
       </SectionShell>
     </>

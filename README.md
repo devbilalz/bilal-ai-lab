@@ -1,4 +1,4 @@
-# Bilal AI Lab
+# Bilal Runtime
 
 Portfolio for Bilal Zahid, positioned as an LLM Infrastructure / Agentic AI / AI Platform engineer. Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, Motion, and React Flow. The site is designed to feel like one of Bilal's AI systems, not a resume on the web.
 
@@ -28,7 +28,7 @@ If unset on Vercel, the app automatically falls back to the deployment's own URL
 
 Vercel auto-detects Next.js; no custom build command is needed.
 
-1. Import the repo at [vercel.com/new](https://vercel.com/new). Root directory: `bilal-ai-lab`.
+1. Import the repo at [vercel.com/new](https://vercel.com/new). Root directory: this project folder.
 2. Framework preset: **Next.js**. Build command `next build`, output handled automatically. Package manager: pnpm (from the lockfile / `packageManager` field).
 3. Set the environment variable `NEXT_PUBLIC_SITE_URL` (Production) to the public origin, e.g. `https://bilalzahid.vercel.app` (or a custom domain once one is added under Project → Settings → Domains).
 4. Deploy. `@vercel/analytics` reports automatically once deployed.

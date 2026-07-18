@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Bilal AI Lab - Design tokens (F2)
+   Bilal Runtime - Design tokens (F2)
    Dark-first. Accent = electric violet (swap --accent to change).
    ============================================================ */
 :root {
@@ -24,6 +24,25 @@
   --accent-soft: #a892ff;
   --accent-contrast: #ffffff;
   --accent-glow: rgba(124, 92, 255, 0.35);
+
+  /* Atmospheric canvas tokens */
+  --sky-wash:
+    radial-gradient(70rem 55rem at 12% -8%, rgba(124, 92, 255, 0.16), transparent 60%),
+    radial-gradient(60rem 50rem at 108% 12%, rgba(34, 211, 238, 0.1), transparent 58%),
+    radial-gradient(75rem 60rem at 50% 118%, rgba(124, 92, 255, 0.12), transparent 62%),
+    radial-gradient(45rem 40rem at 82% 78%, rgba(244, 114, 182, 0.06), transparent 60%);
+  --sky-stroke:
+    linear-gradient(125deg, transparent 30%, rgba(96, 130, 255, 0.05) 48%, transparent 62%),
+    linear-gradient(215deg, transparent 40%, rgba(34, 211, 238, 0.04) 55%, transparent 70%);
+  --sky-vignette: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(6, 6, 12, 0.55) 100%);
+  --celestial-glow: rgba(124, 92, 255, 0.28);
+  --constellation-node-alpha: 1;
+  --constellation-line-alpha: 1;
+  --constellation-glow-alpha: 1;
+  --constellation-core-rgb: 226 241 255;
+  --constellation-core-accent-rgb: 34 211 238;
+  --mission-node-bg: rgba(20, 20, 29, 0.94);
+  --mission-node-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
 
   /* Status */
   --online: #34d399;
@@ -54,6 +73,169 @@
   --z-nav: 50;
   --z-overlay: 80;
   --z-modal: 100;
+}
+
+.light {
+  --bg: #f6f0e5;
+  --bg-elevated: rgba(255, 250, 239, 0.86);
+  --surface: rgba(255, 246, 229, 0.78);
+  --border: rgba(27, 36, 48, 0.12);
+  --border-strong: rgba(27, 36, 48, 0.2);
+  --fg: #172030;
+  --fg-muted: #435063;
+  --fg-subtle: #69758a;
+  --accent: #3858d6;
+  --accent-soft: #6b7ef0;
+  --accent-contrast: #ffffff;
+  --accent-glow: rgba(56, 88, 214, 0.2);
+  --shadow-card: 0 1px 2px rgba(60, 50, 35, 0.08), 0 16px 42px rgba(60, 50, 35, 0.12);
+  --shadow-glow: 0 0 0 1px var(--border), 0 0 32px rgba(56, 88, 214, 0.16);
+  --mission-node-bg: rgba(255, 246, 229, 0.9);
+  --mission-node-shadow: 0 12px 28px rgba(60, 50, 35, 0.14);
+}
+
+html.light[data-time-phase="morning"] {
+  --bg: #fbf0dd;
+  --bg-elevated: rgba(255, 249, 238, 0.88);
+  --surface: rgba(255, 241, 219, 0.78);
+  --accent: #b76d1f;
+  --accent-soft: #f1aa4f;
+  --accent-glow: rgba(241, 170, 79, 0.24);
+  --sky-wash:
+    radial-gradient(48rem 36rem at 10% 78%, rgba(255, 184, 88, 0.42), transparent 62%),
+    linear-gradient(180deg, rgba(159, 198, 255, 0.28) 0%, rgba(255, 226, 190, 0.36) 48%, rgba(255, 184, 110, 0.3) 100%),
+    radial-gradient(70rem 48rem at 52% 116%, rgba(255, 214, 153, 0.2), transparent 66%);
+  --sky-stroke:
+    linear-gradient(128deg, transparent 28%, rgba(255, 177, 94, 0.12) 46%, transparent 63%),
+    linear-gradient(215deg, transparent 38%, rgba(74, 132, 255, 0.07) 56%, transparent 72%);
+  --sky-vignette: radial-gradient(115% 105% at 52% 42%, transparent 62%, rgba(110, 79, 37, 0.16) 100%);
+  --celestial-glow: rgba(255, 187, 92, 0.34);
+  --constellation-node-alpha: 0.58;
+  --constellation-line-alpha: 0.34;
+  --constellation-glow-alpha: 0.72;
+  --constellation-core-rgb: 255 232 185;
+  --constellation-core-accent-rgb: 255 171 75;
+}
+
+html.light[data-time-phase="day"] {
+  --sky-wash:
+    radial-gradient(54rem 40rem at 50% 12%, rgba(255, 225, 122, 0.18), transparent 58%),
+    linear-gradient(180deg, rgba(94, 169, 255, 0.32) 0%, rgba(163, 213, 255, 0.24) 46%, rgba(246, 240, 229, 0.12) 100%),
+    radial-gradient(74rem 52rem at 52% 112%, rgba(128, 207, 255, 0.12), transparent 62%);
+  --sky-stroke:
+    linear-gradient(125deg, transparent 30%, rgba(80, 130, 214, 0.045) 48%, transparent 64%),
+    linear-gradient(215deg, transparent 40%, rgba(255, 170, 80, 0.05) 58%, transparent 74%);
+  --sky-vignette: radial-gradient(115% 110% at 50% 44%, transparent 64%, rgba(55, 73, 105, 0.1) 100%);
+  --celestial-glow: rgba(255, 210, 116, 0.22);
+  --constellation-node-alpha: 0.42;
+  --constellation-line-alpha: 0.22;
+  --constellation-glow-alpha: 0.48;
+  --constellation-core-rgb: 255 236 190;
+  --constellation-core-accent-rgb: 255 198 92;
+}
+
+html.dark[data-time-phase="evening"] {
+  --bg: #100b16;
+  --bg-elevated: #17111f;
+  --surface: #1c1428;
+  --fg: #f6efff;
+  --fg-muted: #cfc2de;
+  --fg-subtle: #a694ba;
+  --accent: #ff9d6c;
+  --accent-soft: #d7a4ff;
+  --accent-glow: rgba(255, 157, 108, 0.28);
+  --sky-wash:
+    radial-gradient(52rem 38rem at 90% 78%, rgba(255, 138, 92, 0.36), transparent 62%),
+    linear-gradient(180deg, rgba(44, 35, 95, 0.42) 0%, rgba(92, 48, 112, 0.24) 46%, rgba(255, 111, 145, 0.16) 100%),
+    radial-gradient(68rem 52rem at 18% -10%, rgba(124, 92, 255, 0.18), transparent 60%);
+  --sky-stroke:
+    linear-gradient(125deg, transparent 30%, rgba(255, 157, 108, 0.065) 48%, transparent 64%),
+    linear-gradient(215deg, transparent 40%, rgba(124, 92, 255, 0.06) 56%, transparent 72%);
+  --sky-vignette: radial-gradient(120% 115% at 50% 42%, transparent 55%, rgba(10, 6, 15, 0.62) 100%);
+  --celestial-glow: rgba(255, 157, 108, 0.26);
+  --constellation-node-alpha: 0.78;
+  --constellation-line-alpha: 0.62;
+  --constellation-glow-alpha: 0.88;
+  --constellation-core-rgb: 255 207 170;
+  --constellation-core-accent-rgb: 255 157 108;
+}
+
+html.dark[data-time-phase="night"],
+html[data-time-phase="night"] {
+  --bg: #06060a;
+  --bg-elevated: #101018;
+  --surface: #14141d;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --fg: #f3f3f8;
+  --fg-muted: #c1c1d0;
+  --fg-subtle: #8f8fa6;
+  --accent: #7c5cff;
+  --accent-soft: #a892ff;
+  --accent-contrast: #ffffff;
+  --accent-glow: rgba(124, 92, 255, 0.35);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 1px var(--border), 0 0 32px var(--accent-glow);
+  --mission-node-bg: rgba(20, 20, 29, 0.94);
+  --mission-node-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
+  --sky-wash:
+    radial-gradient(70rem 55rem at 12% -8%, rgba(124, 92, 255, 0.16), transparent 60%),
+    radial-gradient(60rem 50rem at 108% 12%, rgba(34, 211, 238, 0.1), transparent 58%),
+    radial-gradient(75rem 60rem at 50% 118%, rgba(124, 92, 255, 0.12), transparent 62%),
+    radial-gradient(45rem 40rem at 82% 78%, rgba(244, 114, 182, 0.06), transparent 60%);
+  --sky-stroke:
+    linear-gradient(125deg, transparent 30%, rgba(96, 130, 255, 0.05) 48%, transparent 62%),
+    linear-gradient(215deg, transparent 40%, rgba(34, 211, 238, 0.04) 55%, transparent 70%);
+  --sky-vignette: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(6, 6, 12, 0.55) 100%);
+  --celestial-glow: rgba(124, 92, 255, 0.28);
+  --constellation-node-alpha: 1;
+  --constellation-line-alpha: 1;
+  --constellation-glow-alpha: 1;
+  --constellation-core-rgb: 226 241 255;
+  --constellation-core-accent-rgb: 34 211 238;
+}
+
+html[data-runtime-section="mission-control"] {
+  --accent-glow: color-mix(in srgb, var(--accent) 34%, transparent);
+  --sky-vignette: radial-gradient(120% 120% at 50% 40%, transparent 52%, color-mix(in srgb, var(--accent) 16%, transparent) 100%);
+}
+
+html[data-runtime-section="metrics"] {
+  --sky-stroke:
+    linear-gradient(125deg, transparent 28%, color-mix(in srgb, var(--warn) 18%, transparent) 48%, transparent 66%),
+    linear-gradient(215deg, transparent 42%, color-mix(in srgb, var(--accent) 8%, transparent) 58%, transparent 74%);
+}
+
+html[data-runtime-section="evidence"] {
+  --sky-stroke:
+    linear-gradient(125deg, transparent 30%, color-mix(in srgb, var(--online) 18%, transparent) 50%, transparent 68%),
+    linear-gradient(215deg, transparent 42%, color-mix(in srgb, var(--accent) 8%, transparent) 58%, transparent 76%);
+}
+
+.runtime-section-aurora {
+  opacity: 0;
+  transition: opacity 900ms var(--ease), background 900ms var(--ease);
+}
+
+html[data-runtime-section="mission-control"] .runtime-section-aurora {
+  opacity: 0.8;
+  background:
+    radial-gradient(42rem 28rem at 76% 30%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 64%),
+    linear-gradient(120deg, transparent 30%, color-mix(in srgb, var(--accent) 8%, transparent) 48%, transparent 66%);
+}
+
+html[data-runtime-section="metrics"] .runtime-section-aurora {
+  opacity: 0.7;
+  background:
+    radial-gradient(36rem 24rem at 18% 34%, color-mix(in srgb, var(--warn) 18%, transparent), transparent 66%),
+    linear-gradient(90deg, transparent 38%, color-mix(in srgb, var(--warn) 7%, transparent) 50%, transparent 62%);
+}
+
+html[data-runtime-section="evidence"] .runtime-section-aurora {
+  opacity: 0.78;
+  background:
+    radial-gradient(34rem 26rem at 82% 68%, color-mix(in srgb, var(--online) 17%, transparent), transparent 68%),
+    linear-gradient(145deg, transparent 34%, color-mix(in srgb, var(--online) 7%, transparent) 52%, transparent 70%);
 }
 
 /* Map tokens into Tailwind's theme so utilities like bg-background,
@@ -89,6 +271,7 @@ html {
   scroll-behavior: smooth;
   background: var(--bg);
   font-size: 17px;
+  transition: background-color 900ms var(--ease);
 }
 
 body {
@@ -101,6 +284,7 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: color 650ms var(--ease);
 }
 
 /* Buttons should always read as clickable (browsers default to the arrow). */
@@ -119,6 +303,58 @@ button:not(:disabled),
 ::selection {
   background: var(--accent-glow);
   color: var(--fg);
+}
+
+.mission-node {
+  background: var(--mission-node-bg) !important;
+  box-shadow: var(--mission-node-shadow);
+  color: var(--fg);
+}
+
+html[data-resolved-theme="dark"] .mission-node,
+html[data-time-phase="night"] .mission-node {
+  background: rgba(20, 20, 29, 0.96) !important;
+  color: #f3f3f8;
+}
+
+.mission-flow .react-flow__edge-textbg {
+  fill: #171724 !important;
+}
+
+.mission-flow .react-flow__edge-text {
+  fill: #e7e7f2 !important;
+}
+
+.mission-flow .react-flow__controls {
+  background: rgba(16, 16, 25, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+}
+
+.mission-flow .react-flow__controls-button {
+  background: rgba(20, 20, 29, 0.96) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cfd2e6 !important;
+  fill: #cfd2e6 !important;
+}
+
+.mission-flow .react-flow__controls-button svg {
+  fill: #cfd2e6 !important;
+}
+
+html[data-resolved-theme="light"] .mission-flow .react-flow__edge-textbg {
+  fill: #fff6e5 !important;
+}
+
+html[data-resolved-theme="light"] .mission-flow .react-flow__edge-text {
+  fill: #435063 !important;
+}
+
+html[data-resolved-theme="light"] .mission-flow .react-flow__controls,
+html[data-resolved-theme="light"] .mission-flow .react-flow__controls-button {
+  background: rgba(255, 246, 229, 0.94) !important;
+  color: #435063 !important;
+  fill: #435063 !important;
 }
 
 /* Hero name: a slow, premium light sheen that sweeps across the type once,

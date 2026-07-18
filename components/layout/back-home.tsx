@@ -15,7 +15,7 @@ import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
  * after paint upgrades to the exact page the user came from - so from, say,
  * System Design into Case Files, "back" returns to System Design, not home.
  */
-export function BackHome({ label = "back to the lab" }: { label?: string }) {
+export function BackHome({ label = "back to runtime" }: { label?: string }) {
   const reduced = usePrefersReducedMotion();
   const [target, setTarget] = useState<{ href: string; label: string; home: boolean }>(
     { href: "/", label, home: true },

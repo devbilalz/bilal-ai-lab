@@ -51,7 +51,8 @@ export function SiteMenu() {
   const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
-    setMounted(true);
+    const frame = window.requestAnimationFrame(() => setMounted(true));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -82,6 +83,9 @@ export function SiteMenu() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
+        data-orbit-zone="system-map"
+        data-orbit-hint="route map"
+        data-orbit-place="left"
         className="group inline-flex cursor-pointer items-center gap-2 rounded-full border border-border-strong px-4 py-1.5 text-sm text-foreground transition-colors hover:border-accent hover:bg-surface"
       >
         <Waypoints className="size-4 text-accent transition-transform group-hover:rotate-90" />
@@ -98,7 +102,7 @@ export function SiteMenu() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="fixed inset-0 overflow-hidden bg-background/85 backdrop-blur-md"
+                className="fixed inset-0 overflow-y-auto overscroll-contain bg-background/85 backdrop-blur-md"
                 style={{ zIndex: "var(--z-modal)" }}
                 role="dialog"
                 aria-modal="true"
@@ -142,7 +146,7 @@ export function SiteMenu() {
                 initial={reduced ? false : "hidden"}
                 animate="visible"
                 exit={reduced ? { opacity: 0 } : "exit"}
-                className="relative mx-auto flex min-h-full max-w-2xl flex-col px-6 py-6"
+                className="relative mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-5 sm:px-6 sm:py-6"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Console header */}
@@ -170,12 +174,12 @@ export function SiteMenu() {
                   </button>
                 </div>
 
-                <div className="mt-10 flex flex-1 flex-col gap-10">
+                <div className="mt-8 flex flex-1 flex-col gap-8 sm:mt-10 sm:gap-10">
                   {/* Main page - a single destination (the full walkthrough
                       already lives on the right-side rail, so no duplicate list) */}
                   <div>
                     <p className="flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-widest text-subtle">
-                      <span className="text-accent">//</span> Main
+                      <span className="text-accent">{"//"}</span> Main
                     </p>
                     <motion.ul variants={listV} className="mt-4">
                       <motion.li
@@ -203,7 +207,7 @@ export function SiteMenu() {
                   {/* Dedicated pages */}
                   <div>
                     <p className="flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-widest text-subtle">
-                      <span className="text-accent">//</span> Case files
+                      <span className="text-accent">{"//"}</span> Case files
                     </p>
                     <motion.ul variants={listV} className="mt-4 space-y-3">
                       {sitePages.map((p) => (
@@ -255,15 +259,20 @@ export function SiteMenu() {
                 </div>
 
                 {/* Console footer */}
-                <div className="mt-10 flex items-center justify-between border-t border-border pt-4 font-mono text-[0.68rem] text-subtle">
-                  <span>
-                    <span className="text-accent">{destinations}</span> routes
-                    resolved
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <CornerDownLeft className="size-3" />
-                    select a destination
-                  </span>
+                <div className="mt-10 border-t border-border pt-4 font-mono text-[0.68rem] text-subtle">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <span>
+                      <span className="text-accent">{destinations}</span> routes
+                      resolved
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <CornerDownLeft className="size-3" />
+                      select a destination
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[0.66rem] leading-relaxed">
+                    Context Engine: signals in · fallback-safe state · adaptive interface
+                  </p>
                 </div>
               </motion.div>
               </motion.div>

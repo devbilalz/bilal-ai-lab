@@ -240,7 +240,7 @@ export const deepDives: DeepDive[] = [
       { value: "3", label: "frontier model families compared" },
     ],
     challenges: [
-      "Clean benchmarks tell you who wins in a lab; this suite asked who survives when the tool environment gets messy - so the degradations had to be realistic, not arbitrary noise.",
+      "Clean benchmarks show who wins in a controlled setting; this suite asked who survives when the tool environment gets messy - so the degradations had to be realistic, not arbitrary noise.",
       "The trick was bending benchmark inputs without breaking the benchmark's own scoring: every mutation had to be reversed before grading so results stayed comparable to published baselines.",
       "Composing one degradation at a time was a deliberate constraint - stacking many at once produces a dramatic failure nobody can explain or turn into training signal.",
     ],
@@ -544,7 +544,7 @@ export const deepDives: DeepDive[] = [
     architecture: [
       {
         title: "Data curation pipeline",
-        body: "Sourcing, filtering, and shaping code-centric examples into training-ready datasets, with the prompt format matched to real inference conditions rather than a clean lab format.",
+        body: "Sourcing, filtering, and shaping code-centric examples into training-ready datasets, with the prompt format matched to real inference conditions rather than a sanitized benchmark format.",
       },
       {
         title: "Labeling rubrics + review loops",

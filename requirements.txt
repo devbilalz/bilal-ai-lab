@@ -1,5 +1,5 @@
 # ============================================================
-# Bilal AI Lab — Dependency Manifest (requirements.txt)
+# Bilal Runtime - Dependency Manifest (requirements.txt)
 # ------------------------------------------------------------
 # This is a Node.js / Next.js project. The AUTHORITATIVE manifest
 # is package.json (+ pnpm-lock.yaml). This file is a human-readable

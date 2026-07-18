@@ -48,6 +48,9 @@ export function MetricsStrip() {
             >
               <Link
                 href={m.evidence}
+                data-orbit-zone="metrics"
+                data-orbit-hint={m.orbitHint}
+                data-orbit-place={i % 2 === 0 ? "left" : "right"}
                 style={{ "--m": c } as React.CSSProperties}
                 className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-border bg-surface/40 p-5 transition-colors hover:[border-color:var(--m)]"
               >
