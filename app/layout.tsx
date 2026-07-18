@@ -11,6 +11,7 @@ import { Footer } from "@/components/layout/footer";
 import { Starfield } from "@/components/background/starfield";
 import { SectionRail } from "@/components/layout/section-rail";
 import { RouteHistory } from "@/components/layout/route-history";
+import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,6 +78,7 @@ export default function RootLayout({
           </LenisProvider>
         </ThemeProvider>
         <Analytics />
+        <AnalyticsProvider />
       </body>
     </html>
   );

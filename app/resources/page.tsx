@@ -23,6 +23,8 @@ export default function ResourcesPage() {
         <a
           href={site.resume}
           download
+          data-analytics-label="Download resume PDF"
+          data-analytics-location="resources_primary_actions"
           className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-accent-contrast shadow-[0_0_28px_var(--accent-glow)] transition-opacity hover:opacity-90"
         >
           <Download className="size-4" />
@@ -32,6 +34,8 @@ export default function ResourcesPage() {
           href={site.resume}
           target="_blank"
           rel="noopener noreferrer"
+          data-analytics-label="Open resume PDF"
+          data-analytics-location="resources_primary_actions"
           className="inline-flex items-center gap-2 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:text-foreground"
         >
           <ExternalLink className="size-4" />
@@ -51,6 +55,8 @@ export default function ResourcesPage() {
             <a
               href={site.resume}
               download
+              data-analytics-label="Download resume PDF from fallback"
+              data-analytics-location="resources_pdf_fallback"
               className="inline-flex items-center gap-2 text-accent hover:underline"
             >
               <Download className="size-4" /> Download the resume instead
