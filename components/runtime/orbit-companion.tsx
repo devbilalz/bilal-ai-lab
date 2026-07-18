@@ -63,7 +63,7 @@ function Parachute({
           <AnimatePresence mode="wait">
             <motion.p
               key={message}
-              className="text-balance break-words text-center text-[0.74rem] font-medium leading-tight text-foreground"
+              className="text-balance break-words text-center font-mono text-[0.72rem] font-medium leading-tight tracking-tight text-foreground"
               initial={reduced ? false : { opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, y: -3 }}
@@ -293,6 +293,7 @@ export function OrbitCompanion() {
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [walking, setWalking] = useState(false);
   const [poke, setPoke] = useState(false);
+  const [spins, setSpins] = useState(0);
   const [pointAngle, setPointAngle] = useState(-90);
 
   useEffect(() => {
@@ -388,6 +389,7 @@ export function OrbitCompanion() {
 
   const onPoke = () => {
     setPoke(true);
+    setSpins((s) => s + 1);
     window.setTimeout(() => setPoke(false), 1400);
   };
 
@@ -426,14 +428,23 @@ export function OrbitCompanion() {
           className="group pointer-events-auto -mt-1 block h-[5.4rem] w-[4.1rem] rounded-[1.25rem] outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <span className="pointer-events-none block h-full w-full origin-[50%_20%] transition-transform duration-300 ease-out group-hover:scale-[1.05] group-active:scale-95">
-            <OrbitBody
-              lookX={pointer.x}
-              lookY={pointer.y}
-              mood={mood}
-              walking={walking}
-              pointAngle={pointAngle}
-              reduced={reduced}
-            />
+            <motion.span
+              className="block h-full w-full"
+              animate={reduced ? undefined : { rotate: spins * 360, scale: poke ? [1, 1.14, 1] : 1 }}
+              transition={{
+                rotate: { duration: 0.8, ease: [0.34, 1.32, 0.6, 1] },
+                scale: { duration: 0.65, ease: "easeInOut" },
+              }}
+            >
+              <OrbitBody
+                lookX={pointer.x}
+                lookY={pointer.y}
+                mood={mood}
+                walking={walking}
+                pointAngle={pointAngle}
+                reduced={reduced}
+              />
+            </motion.span>
           </span>
         </button>
       </motion.div>
