@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { site } from "@/lib/site";
 import { StatusDot } from "@/components/common/status-dot";
 import { SiteMenu } from "@/components/layout/site-menu";
 import { ThemeOrbit } from "@/components/layout/theme-orbit";
 import { WeatherWidget } from "@/components/layout/weather-widget";
+import { Wordmark } from "@/components/layout/wordmark";
 
 /**
  * F7 - minimal, premium top bar. Just identity (wordmark + live status) and a
@@ -21,16 +20,7 @@ export function Nav() {
         className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6"
       >
         <div className="min-w-0 flex items-center gap-3">
-          <Link
-            href="/#top"
-            className="min-w-0 truncate font-mono text-sm font-semibold tracking-tight text-foreground"
-          >
-            <span className="text-accent">~/</span>
-            <span className="hidden min-[380px]:inline">
-              {site.name.toLowerCase().replace(/\s+/g, "-")}
-            </span>
-            <span className="min-[380px]:hidden">bilal</span>
-          </Link>
+          <Wordmark />
           <span className="hidden sm:block">
             <StatusDot />
           </span>

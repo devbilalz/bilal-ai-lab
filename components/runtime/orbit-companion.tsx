@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useThemeRuntime } from "@/components/providers/theme-provider";
@@ -35,55 +35,231 @@ function moodFor(section: string | null, zone: OrbitZone | null): Mood {
   return "idle";
 }
 
-const canopyStyle: React.CSSProperties = {
-  borderRadius: "50% 50% 14% 14% / 82% 82% 34% 34%",
-  backgroundImage:
-    "repeating-conic-gradient(from 90deg at 50% 132%, var(--accent) 0deg 11deg, var(--accent-soft) 11deg 22deg)",
-};
+/* ---- realistic ram-air canopy geometry (SVG) ---- */
+const N_CELLS = 9;
+// Symmetric fabric stripes drawn from the live theme accent tokens, so the
+// canopy re-tints with every phase (night / dawn / day / dusk) like the app.
+const cellFill = (i: number) =>
+  Math.round(Math.abs(i - (N_CELLS - 1) / 2)) % 2 === 0 ? "var(--accent)" : "var(--accent-soft)";
+const VBW = 200;
+const VBH = 150;
+const PAD = 18; // keep the canopy off the viewBox edges so tips aren't clipped
+const SPAN = VBW - PAD * 2;
+const CX = VBW / 2;
 
-function Parachute({
+const nrm = (x: number) => (x - CX) / (SPAN / 2);
+const topEdge = (x: number) => 30 + 28 * nrm(x) * nrm(x);
+const thickness = (x: number) => 40 * (1 - 0.4 * nrm(x) * nrm(x));
+const botEdge = (x: number) => topEdge(x) + thickness(x);
+const bx = (i: number) => PAD + (i / N_CELLS) * SPAN;
+
+function cellPath(i: number) {
+  const xl = bx(i);
+  const xr = bx(i + 1);
+  const xm = (xl + xr) / 2;
+  const tl = topEdge(xl);
+  const tr = topEdge(xr);
+  const bl = botEdge(xl);
+  const br = botEdge(xr);
+  const roundL = i === 0;
+  const roundR = i === N_CELLS - 1;
+
+  let d = `M ${xl} ${tl} Q ${xm} ${topEdge(xm) - 5} ${xr} ${tr} `;
+  // right edge (round the outer wingtip on the last cell)
+  d += roundR ? `Q ${xr + 8} ${(tr + br) / 2} ${xr} ${br} ` : `L ${xr} ${br} `;
+  // scalloped bottom
+  d += `Q ${xm} ${botEdge(xm) + 7} ${xl} ${bl} `;
+  // left edge (round the outer wingtip on the first cell)
+  if (roundL) d += `Q ${xl - 8} ${(tl + bl) / 2} ${xl} ${tl} `;
+  return `${d}Z`;
+}
+
+// Top rim arc (for the highlight), following the puffy cell tops.
+const TOP_ARC = (() => {
+  let d = `M ${bx(0)} ${topEdge(bx(0))}`;
+  for (let i = 1; i <= N_CELLS; i++) {
+    const xm = (bx(i - 1) + bx(i)) / 2;
+    d += ` Q ${xm} ${topEdge(xm) - 5} ${bx(i)} ${topEdge(bx(i))}`;
+  }
+  return d;
+})();
+
+// Suspension risers attach across the bot the way real rigging does: a pair to
+// each shoulder, a pair to the head sides, and a pair to the head centre.
+const RISERS = [
+  { x: CX - 52, y: 150 }, // left shoulder
+  { x: CX - 30, y: 146 }, // left head-side
+  { x: CX - 10, y: 143 }, // head centre (left)
+  { x: CX + 10, y: 143 }, // head centre (right)
+  { x: CX + 30, y: 146 }, // right head-side
+  { x: CX + 52, y: 150 }, // right shoulder
+];
+const LINES_PER_RISER = 2;
+const CANOPY_LINES = Array.from({ length: RISERS.length * LINES_PER_RISER }, (_, j) => {
+  const ox = PAD + ((j + 0.5) / (RISERS.length * LINES_PER_RISER)) * SPAN;
+  const riser = RISERS[Math.floor(j / LINES_PER_RISER)];
+  return { x1: ox, y1: botEdge(ox) - 1, x2: riser.x, y2: riser.y };
+});
+
+function Canopy({ walking, reduced }: { walking: boolean; reduced: boolean }) {
+  return (
+    <motion.svg
+      viewBox={`0 0 ${VBW} ${VBH}`}
+      className="w-[7.5rem] overflow-visible drop-shadow-[0_14px_20px_rgba(0,0,0,0.35)]"
+      style={{ transformOrigin: "50% 0%" }}
+      animate={reduced ? undefined : { scaleX: walking ? [1, 1.05, 1] : 1, scaleY: walking ? [1, 1.03, 1] : 1 }}
+      transition={{ duration: 0.72, repeat: walking ? Infinity : 0, ease: "easeInOut" }}
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id="orbit-canopy-shade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
+          <stop offset="42%" stopColor="#fff" stopOpacity="0" />
+          <stop offset="100%" stopColor="#000" stopOpacity="0.32" />
+        </linearGradient>
+      </defs>
+
+      {/* suspension lines fanning to the six risers */}
+      <g stroke="rgba(220,225,235,0.5)" strokeWidth={0.7}>
+        {CANOPY_LINES.map((l, i) => (
+          <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />
+        ))}
+      </g>
+
+      {/* fabric cells (colour + puffy shading) */}
+      {Array.from({ length: N_CELLS }, (_, i) => {
+        const d = cellPath(i);
+        return (
+          <g key={i}>
+            <path d={d} fill={cellFill(i)} stroke="rgba(0,0,0,0.2)" strokeWidth={0.8} strokeLinejoin="round" />
+            <path d={d} fill="url(#orbit-canopy-shade)" />
+          </g>
+        );
+      })}
+
+      {/* crisp top rim highlight */}
+      <path d={TOP_ARC} fill="none" stroke="rgba(255,255,255,0.42)" strokeWidth={0.9} strokeLinecap="round" />
+    </motion.svg>
+  );
+}
+
+/** The rolled-up end of the scroll - the only thing visible when folded. */
+function ScrollRoll() {
+  return (
+    <span
+      aria-hidden
+      className="relative block h-[0.55rem] w-[3.2rem] rounded-full border border-border-strong bg-gradient-to-b from-accent-soft to-accent shadow-[0_2px_6px_-1px_var(--accent)]"
+    >
+      <span className="absolute right-1 top-1/2 size-[0.3rem] -translate-y-1/2 rounded-full border border-border-strong/70 bg-background-elevated/70" />
+      <span className="absolute left-1 top-1/2 h-px w-3 -translate-y-1/2 bg-white/25" />
+    </span>
+  );
+}
+
+/**
+ * Vertical hint banner that hangs from the canopy on a string. It starts as a
+ * rolled scroll and smoothly unrolls upward to reveal the hint stacked one
+ * word per line (a "rail"). All colors come from theme tokens. It stays out of
+ * layout flow, so folding never nudges the bot.
+ */
+function Banner({
   message,
+  open,
   walking,
   reduced,
 }: {
   message: string;
+  open: boolean;
+  walking: boolean;
+  reduced: boolean;
+}) {
+  // The banner reads top-to-bottom, so any horizontal arrow becomes a down arrow.
+  const words = message
+    .replace(/->|→|➜|➡|»/g, "↓")
+    .split(/\s+/)
+    .filter(Boolean);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [fullHeight, setFullHeight] = useState(0);
+
+  useEffect(() => {
+    if (contentRef.current) setFullHeight(contentRef.current.offsetHeight);
+  }, [message]);
+
+  const revealHeight = open ? fullHeight : 0;
+
+  return (
+    <div className="absolute bottom-full left-1/2 flex -translate-x-1/2 flex-col items-center pb-1">
+      {/* banner group - sways as a whole (gentle idle, faster on scroll) */}
+      <motion.div
+        className="flex flex-col items-center"
+        style={{ transformOrigin: "50% 100%" }}
+        animate={
+          reduced || !open
+            ? { rotate: 0, skewX: 0 }
+            : {
+                rotate: walking ? [-2, 2, -2] : [-0.8, 0.8, -0.8],
+                skewX: walking ? [-3.5, 3.5, -3.5] : [-1.4, 1.4, -1.4],
+              }
+        }
+        transition={{ duration: walking ? 0.95 : 3.4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        {/* the parchment paper that unrolls upward from the roll */}
+        <motion.div
+          className="flex flex-col justify-end overflow-hidden"
+          animate={{ height: revealHeight, opacity: open ? 1 : 0 }}
+          transition={reduced ? { duration: 0 } : { height: { duration: 0.62, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.3 } }}
+        >
+          <div
+            ref={contentRef}
+            className="relative flex flex-col items-center gap-[0.15rem] px-2.5 pb-1 pt-1.5"
+          >
+            {/* side rails */}
+            <span className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-accent to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-accent to-transparent" />
+            <motion.div
+              key={message}
+              className="flex flex-col items-center gap-[0.15rem]"
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.25 }}
+            >
+              {words.map((word, i) => (
+                <span
+                  key={i}
+                  className="whitespace-nowrap text-center font-mono text-[0.72rem] font-medium leading-tight tracking-tight text-foreground [text-shadow:0_0_6px_var(--background),0_0_6px_var(--background)]"
+                >
+                  {word}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* rolled end sits just above the string; always visible */}
+        <ScrollRoll />
+      </motion.div>
+
+      {/* tether string down to the canopy */}
+      <span className="h-3.5 w-px bg-gradient-to-b from-border-strong to-border-strong/20" />
+    </div>
+  );
+}
+
+function Parachute({
+  message,
+  open,
+  walking,
+  reduced,
+}: {
+  message: string;
+  open: boolean;
   walking: boolean;
   reduced: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center">
-      <motion.div
-        className="relative flex w-[10rem] items-center justify-center border border-border-strong px-3 pb-4 pt-5 shadow-[0_16px_40px_-14px_var(--accent)]"
-        style={{ ...canopyStyle, transformOrigin: "50% 0%" }}
-        animate={reduced ? undefined : { scaleX: walking ? [1, 1.06, 1] : 1, scaleY: walking ? [1, 1.035, 1] : 1 }}
-        transition={{ duration: 0.72, repeat: walking ? Infinity : 0, ease: "easeInOut" }}
-      >
-        <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-b from-white/25 via-transparent to-black/10" />
-        <div className="relative mx-auto w-fit max-w-full rounded-2xl border border-border/70 bg-background-elevated/85 px-2.5 py-1.5 backdrop-blur-md">
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={message}
-              className="text-balance break-words text-center font-mono text-[0.72rem] font-medium leading-tight tracking-tight text-foreground"
-              initial={reduced ? false : { opacity: 0, y: 3 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduced ? { opacity: 0 } : { opacity: 0, y: -3 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {message}
-            </motion.p>
-          </AnimatePresence>
-        </div>
-      </motion.div>
-
-      <div className="relative -mt-0.5 flex h-5 items-start justify-center gap-[0.55rem]">
-        {[-13, -5, 5, 13].map((rotate, index) => (
-          <span
-            key={index}
-            style={{ transform: `rotate(${rotate}deg)` }}
-            className="h-5 w-px origin-top bg-gradient-to-b from-border-strong to-transparent"
-          />
-        ))}
-      </div>
+    <div className="relative flex flex-col items-center">
+      <Banner message={message} open={open} walking={walking} reduced={reduced} />
+      <Canopy walking={walking} reduced={reduced} />
     </div>
   );
 }
@@ -295,21 +471,36 @@ export function OrbitCompanion() {
   const [poke, setPoke] = useState(false);
   const [spins, setSpins] = useState(0);
   const [pointAngle, setPointAngle] = useState(-90);
+  const [bannerOpen, setBannerOpen] = useState(true);
+  const foldTimer = useRef(0);
+
+  // Any interaction (pointer move, scroll, hint change) unfurls the banner and
+  // resets a fold timer; ~3s of stillness rolls it back up.
+  const bumpBanner = useCallback(() => {
+    setBannerOpen(true);
+    window.clearTimeout(foldTimer.current);
+    foldTimer.current = window.setTimeout(() => setBannerOpen(false), 3000);
+  }, []);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setMounted(true));
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
+    bumpBanner();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(foldTimer.current);
+    };
+  }, [bumpBanner]);
 
   useEffect(() => {
     const onPointerMove = (event: PointerEvent) => {
       const nx = event.clientX / window.innerWidth - 0.5;
       const ny = event.clientY / window.innerHeight - 0.5;
       setPointer({ x: nx * 2, y: ny * 2 });
+      bumpBanner();
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     return () => window.removeEventListener("pointermove", onPointerMove);
-  }, []);
+  }, [bumpBanner]);
 
   useEffect(() => {
     let previousY = window.scrollY;
@@ -318,6 +509,7 @@ export function OrbitCompanion() {
       const nextY = window.scrollY;
       if (Math.abs(nextY - previousY) > 2) {
         setWalking(true);
+        bumpBanner();
         window.clearTimeout(idleTimer);
         idleTimer = window.setTimeout(() => setWalking(false), 280);
       }
@@ -328,7 +520,7 @@ export function OrbitCompanion() {
       window.clearTimeout(idleTimer);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [bumpBanner]);
 
   useEffect(() => {
     const onPointerOver = (event: PointerEvent) => {
@@ -385,6 +577,10 @@ export function OrbitCompanion() {
     [hint, mode, pathname, phase, resolvedTheme, section, sunProgress, weather, weatherStatus, zone],
   );
 
+  useEffect(() => {
+    bumpBanner();
+  }, [message, bumpBanner]);
+
   const mood = poke ? "excited" : moodFor(section, zone);
 
   const onPoke = () => {
@@ -419,7 +615,7 @@ export function OrbitCompanion() {
       >
         <AnimatePresence>{walking && !reduced && <AirStream />}</AnimatePresence>
 
-        <Parachute message={message} walking={walking} reduced={reduced} />
+        <Parachute message={message} open={bannerOpen} walking={walking} reduced={reduced} />
 
         <button
           type="button"

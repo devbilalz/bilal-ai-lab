@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Waypoints, X, ArrowRight, CornerDownLeft } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { sitePages } from "@/lib/nav";
 import { deepDives } from "@/lib/content/deep-dives";
 import { setDeepDiveOrigin } from "@/lib/nav-history";
+import { goToSection } from "@/lib/scroll-to-section";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
 
 /**
@@ -49,6 +51,7 @@ export function SiteMenu() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const reduced = usePrefersReducedMotion();
+  const pathname = usePathname();
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setMounted(true));
@@ -73,6 +76,13 @@ export function SiteMenu() {
   }, [open]);
 
   const close = () => setOpen(false);
+
+  const goHome = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/" && goToSection("top")) {
+      e.preventDefault();
+    }
+    close();
+  };
 
   const destinations = 1 + sitePages.length + deepDives.length;
 
@@ -189,7 +199,7 @@ export function SiteMenu() {
                         <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-accent/[0.07] to-transparent transition-transform duration-700 group-hover/card:translate-x-full" />
                         <Link
                           href="/#top"
-                          onClick={close}
+                          onClick={goHome}
                           className="group relative flex flex-col"
                         >
                           <span className="flex items-center gap-2 font-mono text-base font-medium text-foreground group-hover:text-accent">

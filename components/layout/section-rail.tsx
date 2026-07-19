@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { homeSections } from "@/lib/nav";
 import { useScrollSpy } from "@/lib/hooks/use-scroll-spy";
 import { usePrefersReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { goToSection } from "@/lib/scroll-to-section";
 import { cn } from "@/lib/utils";
 
 const IDS = homeSections.map((s) => s.id);
@@ -61,10 +62,7 @@ export function SectionRail() {
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (!el) return;
-    window.history.pushState(null, "", `#${id}`);
-    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    goToSection(id, !reduced);
   };
 
   return (
